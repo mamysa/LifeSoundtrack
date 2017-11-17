@@ -1,0 +1,28 @@
+1) Server (aka Service)
+	-> Media Player FSM.
+		-> Time tracking 
+	-> Context getting stuff: 
+		-> GPS coordinates. (background task)
+		-> Weather (definitely background task + API call)
+		-> Accelerometer? (maybe?)
+		-> Current time / day of the week.
+	-> Track music collection on filesystem. (polling at predefined intervals?)
+		-> Give those tracks our own IDs + store in own DB.
+	-> Separate service for ranking?
+		-> sum (dot( current_gps_loc, trackpreviouslyplated_at_gps_loc)) for locations. (?)
+	-> Ranks recomputed every hour?
+		->  "Scrolling" playlist (? maybe not!)
+	
+2) Activity 
+	-> Somehow trigger mood "dialog"/activity.
+		-> Activate it using button or at predefined intervals (?) 
+
+3) Common
+	-> Proper Playlist datastructure
+		-> Must point to currently playing track.
+		-> Ability to choose previous / next tracks. (Linked list?)
+
+4) DB Schemas
+	-> When song finishes playing 
+		-> (song_id, gps, user_mood, time, day_of_the_week, weather(temperature?), activity)
+		
