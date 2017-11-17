@@ -1,0 +1,42 @@
+package ch.usi.inf.gabrialex.protocol;
+
+/**
+ * Created by alex on 17.11.17.
+ */
+
+public class Protocol {
+    /**
+     * Request playlist from the service
+     */
+    public final static String REQUEST_SONG_LISTING = "REQUEST_SONG_LISTING";
+
+    /**
+     * Playlist response from the service
+     */
+    public final static String RESPONSE_SONG_LISTING = "RESPONSE_SONG_LISTING";
+
+    /**
+     * Move to the next track.
+     */
+    public final static String PLAYER_NEXT = "PLAYER_NEXT";
+
+    /**
+     * Move to the previous track.
+     */
+    public final static String PLAYER_PREV = "PLAYER_PREV";
+
+    /**
+     * Pick track from playlist
+     */
+    public final static String PLAYER_SETTRACK = "PLAYER_SETTRACK";
+
+    /**
+     * Start the player.
+     */
+    public final static String PLAYER_RESUME  = "PLAYER_RESUME";
+
+    /**
+     * Pause the player.
+     */
+    public final static String PLAYER_PAUSE = "PLAYER_PAUSE";
+}
