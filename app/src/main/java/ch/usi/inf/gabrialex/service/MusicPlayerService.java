@@ -34,7 +34,6 @@ public class MusicPlayerService extends Service {
         super.onCreate();
         this.playlist = this.getMusicListing();
 
-
         // initialize request handlers
         this.requestHandlers = new HashMap<>();
         this.requestHandlers.put(Protocol.REQUEST_SONG_LISTING, this.RequestSongListing);
@@ -115,8 +114,6 @@ public class MusicPlayerService extends Service {
     public IBinder onBind(Intent intent) {
         return this.binder;
     }
-
-
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
