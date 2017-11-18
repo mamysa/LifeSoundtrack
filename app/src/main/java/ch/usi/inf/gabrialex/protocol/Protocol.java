@@ -35,8 +35,18 @@ public class Protocol {
      */
     public final static String PLAYER_RESUME  = "PLAYER_RESUME";
 
+
+    /**
+     * Toggle player
+     */
+    public final static String PLAYER_TOGGLE = "PLAYER_TOGGLE";
+
     /**
      * Pause the player.
      */
     public final static String PLAYER_PAUSE = "PLAYER_PAUSE";
+
+    /**
+     *
+     */
 }

@@ -27,7 +27,7 @@ public class MusicPlayerService extends Service {
     private LocalBroadcastManager broadcastManager;
     private ArrayList<Audio> playlist;
 
-    private HashMap<String, RequestHandler> requestHandlers;
+    private HashMap<String, EventHandler> requestHandlers;
 
     @Override
     public void onCreate() {
@@ -37,8 +37,7 @@ public class MusicPlayerService extends Service {
         // initialize request handlers
         this.requestHandlers = new HashMap<>();
         this.requestHandlers.put(Protocol.REQUEST_SONG_LISTING, this.RequestSongListing);
-        this.requestHandlers.put(Protocol.PLAYER_RESUME, this.ResumeTrack);
-        this.requestHandlers.put(Protocol.PLAYER_PAUSE , this.PauseTrack);
+        this.requestHandlers.put(Protocol.PLAYER_TOGGLE, this.ToggleTrack);
         this.requestHandlers.put(Protocol.PLAYER_NEXT, this.NextTrack);
         this.requestHandlers.put(Protocol.PLAYER_PREV, this.PreviousTrack);
 
@@ -65,9 +64,9 @@ public class MusicPlayerService extends Service {
     /**
      * Request handler for song listing.
      */
-    private final RequestHandler RequestSongListing = new RequestHandler() {
+    private final EventHandler RequestSongListing = new EventHandler() {
         @Override
-        public void handleRequest(Intent intent) {
+        public void handleEvent(Intent intent) {
             Intent in = new Intent();
             in.setAction(Protocol.RESPONSE_SONG_LISTING);
             in.putParcelableArrayListExtra(Protocol.RESPONSE_SONG_LISTING, playlist);
@@ -78,30 +77,23 @@ public class MusicPlayerService extends Service {
     /**
      * Play the track handler
      */
-    private final RequestHandler ResumeTrack = new RequestHandler() {
+    private final EventHandler ToggleTrack = new EventHandler() {
         @Override
-        public void handleRequest(Intent intent) {
-            mediaPlayer.resume();
+        public void handleEvent(Intent intent) {
+            mediaPlayer.toggle();
         }
     };
 
-    private final RequestHandler PauseTrack = new RequestHandler() {
+    private final EventHandler NextTrack = new EventHandler() {
         @Override
-        public void handleRequest(Intent intent) {
-            mediaPlayer.pause();
-        }
-    };
-
-    private final RequestHandler NextTrack = new RequestHandler() {
-        @Override
-        public void handleRequest(Intent intent) {
+        public void handleEvent(Intent intent) {
             mediaPlayer.playNext();
         }
     };
 
-    private final RequestHandler PreviousTrack = new RequestHandler() {
+    private final EventHandler PreviousTrack = new EventHandler() {
         @Override
-        public void handleRequest(Intent intent) {
+        public void handleEvent(Intent intent) {
             mediaPlayer.playPrevious();
         }
     };
@@ -119,9 +111,9 @@ public class MusicPlayerService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            RequestHandler handler = requestHandlers.get(action);
+            EventHandler handler = requestHandlers.get(action);
             if (handler != null) {
-                handler.handleRequest(intent);
+                handler.handleEvent(intent);
             }
         }
     };

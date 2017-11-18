@@ -24,82 +24,174 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ch.usi.inf.gabrialex.protocol.Protocol;
 import ch.usi.inf.gabrialex.service.Audio;
+import ch.usi.inf.gabrialex.service.EventHandler;
 import ch.usi.inf.gabrialex.service.MusicPlayerService;
 
 public class MainActivity extends AppCompatActivity implements PlayerControlEventListener {
 
     private LocalBroadcastManager broadcastManager;
-    private MusicPlayerService musicService;
-    private boolean musicServiceBound = false;
     private ArrayList<Audio> playlist;
-    private int cursor = 0;
-    private boolean playing = false;
     private ViewPager viewPager;
     private PagerAdapter pagerAdapter;
 
+
     private PlayerControlFragment playerControlFragment;
     private PlaylistFragment playlistFragment;
+    private HashMap<String, EventHandler> eventHandlers;
 
 
     /**
-     * TODO remove this later.
-     * @return
+     * onCreate
+     * @param savedInstanceState
      */
-    public Audio getCurrentTrack() {
-        return this.playlist.get(this.cursor);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // setup event handlers.
+        this.eventHandlers = new HashMap<>();
+        this.eventHandlers.put(Protocol.RESPONSE_SONG_LISTING, this.PlaylistUpdate);
+
+
+        ArrayList<Fragment> fragments = new ArrayList<>();
+        this.playlistFragment = new PlaylistFragment();
+        this.playlistFragment.setEventListener(this);
+        fragments.add(this.playlistFragment);
+
+        this.playerControlFragment = new PlayerControlFragment();
+        this.playerControlFragment.setEventListener(this);
+        fragments.add(this.playerControlFragment);
+
+        this.viewPager = (ViewPager)findViewById(R.id.fragment_container_pager);
+        this.pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
+        this.viewPager.setAdapter(this.pagerAdapter);
+
+
+        Intent intent = new Intent(this, MusicPlayerService.class);
+        bindService(intent, this.musicServiceConnection, Context.BIND_AUTO_CREATE);
+        this.broadcastManager = LocalBroadcastManager.getInstance(this);
+
+        this.requestUserForPermissions();
     }
 
+    /**
+     * OnResume
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        IntentFilter inf = new IntentFilter();
+        for (String t: this.eventHandlers.keySet()) {
+            inf.addAction(t);
+        }
+        this.broadcastManager.registerReceiver(this.broadcastReceiver, inf);
+        onRequestPlaylistListing();
+    }
+
+    /**
+     * OnPause activity.
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.broadcastManager.unregisterReceiver(this.broadcastReceiver);
+    }
+
+    /**
+     * onDestroy
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(musicServiceConnection);
+    }
+
+    /**
+     * Need to prevent back button press from destroying the service.
+     */
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
+
+    //============================================================
+    // Various requests activity can send to the service.
+    //============================================================
+
+    /**
+     * Request song listing.
+     */
+    public void onRequestPlaylistListing() {
+        Intent intent = new Intent();
+        intent.setAction(Protocol.REQUEST_SONG_LISTING);
+        broadcastManager.sendBroadcast(intent);
+    }
+
+    /**
+     * Sends message to service to select previous track.
+     */
     @Override
     public void onPrevButtonPressed() {
-        this.cursor -= 1;
-        this.cursor = Math.max(this.cursor, 0);
-        this.cursor = Math.min(this.cursor, this.playlist.size() - 1);
-
         Intent intent = new Intent();
         intent.setAction(Protocol.PLAYER_PREV);
         this.broadcastManager.sendBroadcast(intent);
-        this.playerControlFragment.updateView( this.playlist.get(this.cursor) );
+        //this.playerControlFragment.updateView( this.playlist.get(this.cursor) );
     }
 
+    /**
+     * Sends message to service to select next track.
+     */
     @Override
     public void onNextButtonPressed() {
-        this.cursor += 1;
-        this.cursor = Math.max(this.cursor, 0);
-        this.cursor = Math.min(this.cursor, this.playlist.size() - 1);
-
         Intent intent = new Intent();
         intent.setAction(Protocol.PLAYER_NEXT);
         this.broadcastManager.sendBroadcast(intent);
-        this.playerControlFragment.updateView( this.playlist.get(this.cursor) );
+        //this.playerControlFragment.updateView( this.playlist.get(this.cursor) );
     }
 
 
+    /**
+     * Sends message to the server to pause / resume current track.
+     */
      @Override
     public void onPlayPressed() {
-         Intent intent = new Intent();
-        if (this.playing) {
-            intent.setAction(Protocol.PLAYER_PAUSE);
-        } else {
-            intent.setAction(Protocol.PLAYER_RESUME);
-        }
-
-        this.playing = !this.playing;
+        Intent intent = new Intent();
+        intent.setAction(Protocol.PLAYER_TOGGLE);
         this.broadcastManager.sendBroadcast(intent);
     }
 
+    //============================================================
+    // Various responses activity needs to get
+    //============================================================
 
+    /**
+     * Update ListView component when the playlist is updated.
+     */
+    private EventHandler PlaylistUpdate = new EventHandler() {
+        @Override
+        public void handleEvent(Intent intent) {
+            Log.d("PlaylistUpdate", "Updating playlist UI");
+            playlist = intent.getParcelableArrayListExtra(Protocol.RESPONSE_SONG_LISTING);
+            playlistFragment.update(playlist);
+        }
+    };
 
+    /**
+     * Broadcast receiver event handler.
+     */
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            Log.d("Fragment", "Receiving " + action);
-            if ( action.equals(Protocol.RESPONSE_SONG_LISTING) ) {
-                ArrayList<Audio> audio = intent.getParcelableArrayListExtra(Protocol.RESPONSE_SONG_LISTING);
-                updateSongListing(audio);
+            EventHandler handler = eventHandlers.get(action);
+            if (handler != null) {
+                handler.handleEvent(intent);
             }
         }
     };
@@ -108,26 +200,12 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MusicPlayerService.MusicPlayerBinder b = (MusicPlayerService.MusicPlayerBinder)iBinder;
-            musicService = b.getService();
-            musicServiceBound = true;
-            Log.d("NOTE", "service running!");
-
-            Intent intent = new Intent();
-            intent.setAction(Protocol.REQUEST_SONG_LISTING);
-            broadcastManager.sendBroadcast(intent);
+            onRequestPlaylistListing();
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            musicServiceBound = false;
-            Log.d("NOTE", "service stopped!!");
-        }
+        public void onServiceDisconnected(ComponentName componentName) { }
     };
-
-    private void updateSongListing(ArrayList<Audio> trackList) {
-        this.playlist = trackList;
-        this.playlistFragment.update(trackList);
-    }
 
     private void requestUserForPermissions() {
         if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -155,68 +233,10 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        ArrayList<Fragment> fragments = new ArrayList<>();
-        this.playlistFragment = new PlaylistFragment();
-        this.playlistFragment.setEventListener(this);
-        fragments.add(this.playlistFragment);
-
-        this.playerControlFragment = new PlayerControlFragment();
-        this.playerControlFragment.setEventListener(this);
-        fragments.add(this.playerControlFragment);
-
-        this.viewPager = (ViewPager)findViewById(R.id.fragment_container_pager);
-        this.pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
-        this.viewPager.setAdapter(this.pagerAdapter);
-
-        this.requestUserForPermissions();
-
-        Intent intent = new Intent(this, MusicPlayerService.class);
-        bindService(intent, this.musicServiceConnection, Context.BIND_AUTO_CREATE);
-        this.broadcastManager = LocalBroadcastManager.getInstance(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.e("Calling onResume", "watwat");
-
-        IntentFilter inf = new IntentFilter();
-        inf.addAction(Protocol.RESPONSE_SONG_LISTING);
-        this.broadcastManager.registerReceiver(this.broadcastReceiver, inf);
-
-        Intent intent = new Intent();
-        intent.setAction(Protocol.REQUEST_SONG_LISTING);
-        this.broadcastManager.sendBroadcast(intent);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        this.broadcastManager.unregisterReceiver(this.broadcastReceiver);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        unbindService(musicServiceConnection);
-    }
-
-    @Override
-    public void onBackPressed() {
-        //super.onBackPressed();
-        moveTaskToBack(true);
-    }
-
-
-
-
+    /**
+     * Adapter for PageView.
+     */
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         ArrayList<Fragment> fragments;
 

@@ -25,6 +25,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
 
 
     public MediaPlayerAdapter() {
+        this.currentState = State.PAUSED;
         this.mediaPlayer = new MediaPlayer();
         this.mediaPlayer.setOnCompletionListener(this);
         this.cursor = 0;
@@ -35,6 +36,12 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         this.currentState = State.PLAYING;
 
     }
+
+    public void toggle() {
+        if (this.currentState == State.PLAYING)  this.pause();
+        else if (this.currentState == State.PAUSED)   this.resume();
+    }
+
 
     public void setTrack(Audio track) {
         if (this.currentState == State.PLAYING) {
@@ -102,7 +109,6 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             this.setTrack(this.playlist.get(0));
         }
     }
-
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
