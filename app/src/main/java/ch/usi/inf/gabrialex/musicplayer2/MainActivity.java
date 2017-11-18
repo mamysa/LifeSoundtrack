@@ -39,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
     private ViewPager viewPager;
     private PagerAdapter pagerAdapter;
 
+    private PlayerControlFragment playerControlFragment;
+    private PlaylistFragment playlistFragment;
+
 
     /**
      * TODO remove this later.
@@ -57,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         Intent intent = new Intent();
         intent.setAction(Protocol.PLAYER_PREV);
         this.broadcastManager.sendBroadcast(intent);
+        this.playerControlFragment.updateView( this.playlist.get(this.cursor) );
     }
 
     @Override
@@ -68,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         Intent intent = new Intent();
         intent.setAction(Protocol.PLAYER_NEXT);
         this.broadcastManager.sendBroadcast(intent);
+        this.playerControlFragment.updateView( this.playlist.get(this.cursor) );
     }
 
 
@@ -161,12 +166,14 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         setContentView(R.layout.activity_main);
 
         ArrayList<Fragment> fragments = new ArrayList<>();
-        PlayerControlFragment frag1 = new PlayerControlFragment();
-        PlaylistFragment frag2 = new PlaylistFragment();
-        frag1.setEventListener(this);
-        frag2.setEventListener(this);
-        fragments.add(frag1);
-        fragments.add(frag2);
+        this.playlistFragment = new PlaylistFragment();
+        this.playlistFragment.setEventListener(this);
+        fragments.add(this.playlistFragment);
+
+        this.playerControlFragment = new PlayerControlFragment();
+        this.playerControlFragment.setEventListener(this);
+        fragments.add(this.playerControlFragment);
+
         this.viewPager = (ViewPager)findViewById(R.id.fragment_container_pager);
         this.pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
         this.viewPager.setAdapter(this.pagerAdapter);

@@ -2,6 +2,7 @@ package ch.usi.inf.gabrialex.service;
 
 import android.media.AudioTrack;
 import android.media.MediaPlayer;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,21 +61,24 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
     public void playNext() {
         this.reset();
         this.cursor += 1;
-        if (this.cursor >= 0 && this.cursor < this.playlist.size()) {
-            Audio track = this.playlist.get(this.cursor);
-            this.setTrack(track);
-            this.resume();
-        }
+        this.cursor = Math.max(this.cursor, 0);
+        this.cursor = Math.min(this.cursor, this.playlist.size() - 1);
+        Log.e("Player", "playNext " + this.cursor);
+        Audio track = this.playlist.get(this.cursor);
+        this.setTrack(track);
+        this.resume();
     }
 
     public void playPrevious() {
         this.reset();
         this.cursor -= 1;
-        if (this.cursor >= 0 && this.cursor < this.playlist.size()) {
-            Audio track = this.playlist.get(this.cursor);
-            this.setTrack(track);
-            this.resume();
-        }
+        this.cursor = Math.max(this.cursor, 0);
+        this.cursor = Math.min(this.cursor, this.playlist.size() - 1);
+
+        Log.e("Player", "playPrevious " + this.cursor);
+        Audio track = this.playlist.get(this.cursor);
+        this.setTrack(track);
+        this.resume();
     }
 
     public void reset() {

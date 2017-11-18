@@ -3,11 +3,10 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <TextView
-        android:text="View 2"
-        android:background="#605635ea"
+    <ListView
+        android:id="@+id/playlist_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"></ListView>
+    
 </FrameLayout>
 
