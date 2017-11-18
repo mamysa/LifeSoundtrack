@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 
@@ -109,8 +110,11 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
             MusicPlayerService.MusicPlayerBinder b = (MusicPlayerService.MusicPlayerBinder)iBinder;
             musicService = b.getService();
             musicServiceBound = true;
-            // this is where we'd update stuff
             Log.d("NOTE", "service running!");
+
+            Intent intent = new Intent();
+            intent.setAction(Protocol.REQUEST_SONG_LISTING);
+            broadcastManager.sendBroadcast(intent);
         }
 
         @Override
@@ -121,16 +125,8 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
     };
 
     private void updateSongListing(ArrayList<Audio> trackList) {
-        //Collections.sort(trackList);
-        //ListView view = (ListView) findViewById(R.id.TrackListView);
-        //ArrayAdapter<Audio> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, trackList);
         this.playlist = trackList;
-        //view.setAdapter(adapter);
-
-
-        if (trackList.size() != 0) {
-            this.cursor = 0;
-        }
+        this.playlistFragment.update(trackList);
     }
 
     private void requestUserForPermissions() {
@@ -178,95 +174,17 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         this.pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
         this.viewPager.setAdapter(this.pagerAdapter);
 
-        /*
-        if (findViewById(R.id.fragment_container) != null) {
-            if (savedInstanceState != null) {
-                return;
-            }
-
-            PlayerControlFragment fragment = new PlayerControlFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, fragment).commit();
-
-
-        }
-        */
-
-
-
-
-        //ListView view = (ListView) findViewById(R.id.TrackListView);
-        //view.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-
-
-
-
-
         this.requestUserForPermissions();
 
         Intent intent = new Intent(this, MusicPlayerService.class);
         bindService(intent, this.musicServiceConnection, Context.BIND_AUTO_CREATE);
         this.broadcastManager = LocalBroadcastManager.getInstance(this);
-
-
-
-        /*
-        // FIXME this is fugly!
-        final Button play = (Button) findViewById(R.id.PlayButton);
-        play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Log.d("pasing", ""+playing);
-                if (cursor >= 0 && cursor < playlist.size()) {
-                    Intent in = new Intent();
-                    if (playing)
-                        in.setAction(Protocol.PLAYER_PAUSE);
-                    else
-                        in.setAction(Protocol.PLAYER_RESUME);
-
-                    playing = !playing;
-                    broadcastManager.sendBroadcast(in);
-                }
-
-            }
-        });
-
-        final Button next = (Button) findViewById(R.id.NextTrack);
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (cursor >= 0 && cursor < playlist.size()-1) {
-                    cursor += 1;
-                    Intent in = new Intent();
-                    in.setAction(Protocol.PLAYER_NEXT);
-                    broadcastManager.sendBroadcast(in);
-                    Log.d("setting next", ""+cursor);
-                }
-            }
-        });
-
-        final Button prev = (Button) findViewById(R.id.PrevTrack);
-        prev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (cursor > 0 && cursor < playlist.size()) {
-                    cursor -= 1;
-                    Intent in = new Intent();
-                    in.setAction(Protocol.PLAYER_PREV);
-                    broadcastManager.sendBroadcast(in);
-                }
-            }
-        });
-        */
-
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.e("Calling onResume", "watwat");
 
         IntentFilter inf = new IntentFilter();
         inf.addAction(Protocol.RESPONSE_SONG_LISTING);
@@ -275,7 +193,6 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         Intent intent = new Intent();
         intent.setAction(Protocol.REQUEST_SONG_LISTING);
         this.broadcastManager.sendBroadcast(intent);
-        Log.e("Calling onResume", "");
     }
 
     @Override
@@ -321,8 +238,4 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
             return this.fragments.get(position);
         }
     }
-
-
-
-
 }
