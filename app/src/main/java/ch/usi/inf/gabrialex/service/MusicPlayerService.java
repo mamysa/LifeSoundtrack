@@ -18,6 +18,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import ch.usi.inf.gabrialex.datastructures.Playlist;
 import ch.usi.inf.gabrialex.protocol.Protocol;
 
 public class MusicPlayerService extends Service {
@@ -32,7 +33,7 @@ public class MusicPlayerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        this.playlist = this.getMusicListing();
+        this.getMusicListing();
 
         // initialize request handlers
         this.requestHandlers = new HashMap<>();
@@ -43,7 +44,7 @@ public class MusicPlayerService extends Service {
 
         // initialize media player
         this.mediaPlayer = new MediaPlayerAdapter();
-        this.mediaPlayer.setPlaylist(this.playlist);
+        this.mediaPlayer.playlistChanged();
 
         // initialize broadcast manager
         IntentFilter inf = new IntentFilter();
@@ -62,14 +63,16 @@ public class MusicPlayerService extends Service {
     }
 
     /**
-     * Request handler for song listing.
+     * Request handler for song listing. Playlists are treated slightly differently as opposed
+     * to other player state - actual playlist is stored in a singleton object. This way, we
+     * avoid passing a lot of date using intents.
      */
     private final EventHandler RequestSongListing = new EventHandler() {
         @Override
         public void handleEvent(Intent intent) {
             Intent in = new Intent();
             in.setAction(Protocol.RESPONSE_SONG_LISTING);
-            in.putParcelableArrayListExtra(Protocol.RESPONSE_SONG_LISTING, playlist);
+            //in.putParcelableArrayListExtra(Protocol.RESPONSE_SONG_LISTING, playlist);
             broadcastManager.sendBroadcast(in);
         }
     };
@@ -124,11 +127,12 @@ public class MusicPlayerService extends Service {
      * user adds some new music while service is not running and stuff.
      * @return FIXME THIS IS NOT SUPPOSED TO BE HERE
      */
-    public ArrayList<Audio> getMusicListing() {
+    public void getMusicListing() {
         ArrayList<Audio> audioList = new ArrayList<>();
         // TODO @refactor put permission checking logic into seperate method!
         if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            return audioList;
+            //return audioList;
+            return;
         }
         // TODO @refactor this has to go into MusicObserver class.
         ContentResolver resolver = this.getContentResolver();
@@ -156,6 +160,11 @@ public class MusicPlayerService extends Service {
             cursor.close();
         }
 
-        return audioList;
+        synchronized (Playlist.class) {
+            Playlist playlist = Playlist.getInstance();
+            for (Audio audio: audioList) {
+                playlist.addEntry(audio);
+            }
+        }
     }
 }

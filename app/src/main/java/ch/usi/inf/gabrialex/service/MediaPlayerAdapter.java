@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.usi.inf.gabrialex.datastructures.Playlist;
+
 /**
  * Created by alex on 17.11.17.
  */
@@ -20,21 +22,18 @@ enum State {
 public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
     private MediaPlayer mediaPlayer;
     private State currentState;
-    private ArrayList<Audio> playlist;
-    private int cursor;
 
 
     public MediaPlayerAdapter() {
         this.currentState = State.PAUSED;
         this.mediaPlayer = new MediaPlayer();
         this.mediaPlayer.setOnCompletionListener(this);
-        this.cursor = 0;
     }
 
     public void resume() {
+        /// FIXME we need to check if media is still loaded here
         this.mediaPlayer.start();
         this.currentState = State.PLAYING;
-
     }
 
     public void toggle() {
@@ -48,13 +47,6 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             this.reset();
         }
 
-        // ensure track is in playlist TODO how to handle this?
-        this.cursor = this.playlist.indexOf(track);
-        if (this.cursor == -1) {
-            this.reset();
-            return;
-        }
-
         try {
             this.mediaPlayer.setDataSource(track.getData());
             this.mediaPlayer.prepare();
@@ -66,26 +58,35 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
 
     // FIXME this should be in playlist class
     public void playNext() {
+        Log.e("Player", "playNext");
         this.reset();
-        this.cursor += 1;
-        this.cursor = Math.max(this.cursor, 0);
-        this.cursor = Math.min(this.cursor, this.playlist.size() - 1);
-        Log.e("Player", "playNext " + this.cursor);
-        Audio track = this.playlist.get(this.cursor);
-        this.setTrack(track);
-        this.resume();
+
+        Audio track;
+        synchronized (Playlist.class) {
+            track = Playlist.getInstance().playNext();
+        }
+
+        if (track != null) {
+            this.setTrack(track);
+            this.resume();
+            Log.e("playNext", "not null");
+        }
     }
 
     public void playPrevious() {
+        Log.e("Player", "playPrevious");
         this.reset();
-        this.cursor -= 1;
-        this.cursor = Math.max(this.cursor, 0);
-        this.cursor = Math.min(this.cursor, this.playlist.size() - 1);
 
-        Log.e("Player", "playPrevious " + this.cursor);
-        Audio track = this.playlist.get(this.cursor);
-        this.setTrack(track);
-        this.resume();
+        Audio track;
+        synchronized (Playlist.class) {
+            track = Playlist.getInstance().playPrevious();
+        }
+
+        if (track != null) {
+            this.setTrack(track);
+            this.resume();
+            Log.e("playPrevious", "not null");
+        }
     }
 
     public void reset() {
@@ -103,11 +104,14 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         this.mediaPlayer = null;
     }
 
-    public void setPlaylist(ArrayList<Audio> playlist) {
-        this.playlist = playlist;
-        if (this.playlist.size() != 0) {
-            this.setTrack(this.playlist.get(0));
+    public void playlistChanged() {
+       // get the beginning of the playlist
+        Audio track;
+        synchronized (Playlist.class) {
+            track = Playlist.getInstance().playCurrent();
         }
+
+        this.setTrack(track);
     }
 
     @Override

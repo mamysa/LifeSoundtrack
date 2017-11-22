@@ -26,6 +26,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import ch.usi.inf.gabrialex.datastructures.Playlist;
 import ch.usi.inf.gabrialex.protocol.Protocol;
 import ch.usi.inf.gabrialex.service.Audio;
 import ch.usi.inf.gabrialex.service.EventHandler;
@@ -177,8 +178,12 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         @Override
         public void handleEvent(Intent intent) {
             Log.d("PlaylistUpdate", "Updating playlist UI");
+
             playlist = intent.getParcelableArrayListExtra(Protocol.RESPONSE_SONG_LISTING);
-            playlistFragment.update(playlist);
+            synchronized (Playlist.class) {
+                ArrayList<Audio> playlist = Playlist.getInstance().getPlaylist();
+                playlistFragment.update(playlist);
+            }
         }
     };
 
