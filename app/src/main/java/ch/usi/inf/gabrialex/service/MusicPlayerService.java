@@ -41,6 +41,7 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
         this.requestHandlers.put(Protocol.PLAYER_NEXT, this.NextTrack);
         this.requestHandlers.put(Protocol.PLAYER_PREV, this.PreviousTrack);
         this.requestHandlers.put(Protocol.PLAYER_SET_POSITION, this.SetPlaybackPosition);
+        this.requestHandlers.put(Protocol.PLAYER_SETTRACK, this.SetTrack);
 
         // initialize media player
         this.mediaPlayer = new MediaPlayerAdapter();
@@ -54,9 +55,6 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
         }
         this.broadcastManager = LocalBroadcastManager.getInstance(this);
         this.broadcastManager.registerReceiver(this.broadcastReceiver, inf);
-
-
-
     }
 
     @Override
@@ -126,10 +124,24 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
     private final EventHandler SetPlaybackPosition = new EventHandler() {
         @Override
         public void handleEvent(Intent intent) {
-
             int position =  intent.getIntExtra(Protocol.PLAYER_SET_POSITION, 0);
             mediaPlayer.setPlaybackPosition(position);
-            //System.out.println("set playback pos " + position);
+        }
+    };
+
+    /**
+     * Triggers when user selects a song from the list view.
+     */
+    private final EventHandler SetTrack = new EventHandler() {
+        @Override
+        public void handleEvent(Intent requestIntent) {
+            Audio audio = requestIntent.getParcelableExtra(Protocol.PLAYER_SETTRACK);
+            mediaPlayer.setTrack(audio);
+
+            Intent intent = new Intent();
+            intent.setAction(Protocol.PLAYER_NEWTRACK_SELECTED);
+            intent.putExtra(Protocol.PLAYER_NEWTRACK_SELECTED, mediaPlayer.getActiveMedia());
+            broadcastManager.sendBroadcast(intent);
         }
     };
 

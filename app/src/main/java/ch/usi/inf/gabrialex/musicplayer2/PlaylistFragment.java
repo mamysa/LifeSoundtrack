@@ -6,7 +6,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -36,6 +38,21 @@ public class PlaylistFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_playlist, container, false);
     }
 
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ListView view = getView().findViewById(R.id.playlist_view);
+        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Audio audio = (Audio)adapterView.getAdapter().getItem(i);
+                eventListener.onTrackSelected(audio);
+            }
+        });
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -45,6 +62,10 @@ public class PlaylistFragment extends Fragment {
         ArrayAdapter<Audio> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, playlist);
         ListView view = getView().findViewById(R.id.playlist_view);
         view.setAdapter(adapter);
+    }
+
+    public void updateActiveEntry(Audio audio) {
+        ListView view = getView().findViewById(R.id.playlist_view);
     }
 }
 

@@ -30,6 +30,10 @@ public class Playlist {
         this.playlist = new ArrayList<>();
     }
 
+    public boolean contains(Audio audio) {
+        return this.playlist.indexOf(audio) != -1;
+    }
+
     /**
      * Selects next track to play.
      * @return null when playlist is empty. null is also returned when there are no more songs left

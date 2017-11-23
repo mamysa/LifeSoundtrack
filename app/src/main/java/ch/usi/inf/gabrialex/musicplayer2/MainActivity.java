@@ -178,6 +178,18 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         this.broadcastManager.sendBroadcast(intent);
     }
 
+    /**
+     * Fires up when user selects a track to play from list view.
+     * @param param
+     */
+    @Override
+    public void onTrackSelected(Audio param) {
+        Intent intent = new Intent();
+        intent.setAction(Protocol.PLAYER_SETTRACK);
+        intent.putExtra(Protocol.PLAYER_SETTRACK, param);
+        this.broadcastManager.sendBroadcast(intent);
+    }
+
     //============================================================
     // Various responses activity needs to get
     //============================================================
@@ -216,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
     private EventHandler PlaybackPositionUpdated = new EventHandler() {
         @Override
         public void handleEvent(Intent intent) {
-            Log.d("PlaybackPositionUpdated", "Updating timestamp");
+            //Log.d("PlaybackPositionUpdated", "Updating timestamp");
             int position = intent.getIntExtra(Protocol.PLAYER_PLAYBACK_POSITION_DATA, 0);
             int duration = intent.getIntExtra(Protocol.PLAYER_PLAYBACK_DURATION_DATA, 0);
             playerControlFragment.updatePlaybackPosition(position, duration);

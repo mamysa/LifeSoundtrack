@@ -44,7 +44,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-               PlaybackPositionUpdateTask t = new PlaybackPositionUpdateTask();
+                PlaybackPositionUpdateTask t = new PlaybackPositionUpdateTask();
                 t.execute();
             }
         };
@@ -93,6 +93,29 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         }
         catch (IOException ex) {
             throw new AssertionError("IOException caught: Error loading resource " + track.getData());
+        }
+    }
+
+    public void setTrack(Audio audio) {
+        synchronized (Playlist.class) {
+            Playlist instance = Playlist.getInstance();
+
+            if (instance.playlistEmpty()) {
+                return;
+            }
+
+            if (instance.contains(audio)) {
+                // contextEnd(time.now(), this.activeMedia)
+                if (this.currentState == State.PLAYING) {
+                    this.mediaPlayer.pause();
+                }
+
+                this.loadResource(audio);
+                this.currentState = State.PLAYING;
+                this.mediaPlayer.start();
+                // contextNew(Time.now(), this.activeMedia)
+                eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
+            }
         }
     }
 
@@ -185,6 +208,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         this.mediaPlayer.seekTo(position);
         eventListener.onPlaybackPositionChanged(this.mediaPlayer.getCurrentPosition(), this.activeMedia.getDuration());
     }
+
 
     public void release() {
         this.mediaPlayer.release();
