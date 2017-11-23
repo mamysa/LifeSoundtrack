@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.concurrent.TimeUnit;
+
 import ch.usi.inf.gabrialex.service.Audio;
 
 /**
@@ -69,5 +71,28 @@ public class PlayerControlFragment extends Fragment {
     public void updateView(Audio t) {
         TextView view = getView().findViewById(R.id.song_title_box);
         view.setText(t.toString());
+    }
+
+    public void updatePlaybackPosition(int position, int duration) {
+        TextView playbackText = getView().findViewById(R.id.song_progress_box);
+
+
+        //int seconds = (duration / 1000) % 60;
+        //int minutes = (duration / (1000*60)) % 60;
+        //int minutes = (duration / (1000*60*60)) % 24;
+        String durationF = String.format("%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(duration),
+                TimeUnit.MILLISECONDS.toSeconds(duration) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
+        );
+
+        String positionF = String.format("%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(position),
+                TimeUnit.MILLISECONDS.toSeconds(position) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(position))
+        );
+
+        playbackText.setText(positionF + " " + durationF);
+
     }
 }

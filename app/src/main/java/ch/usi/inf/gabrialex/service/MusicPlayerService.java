@@ -21,12 +21,11 @@ import java.util.HashMap;
 import ch.usi.inf.gabrialex.datastructures.Playlist;
 import ch.usi.inf.gabrialex.protocol.Protocol;
 
-public class MusicPlayerService extends Service {
+public class MusicPlayerService extends Service implements PlayerStateEventListener {
 
     private Binder binder = new MusicPlayerBinder();
     private MediaPlayerAdapter mediaPlayer;
     private LocalBroadcastManager broadcastManager;
-    private ArrayList<Audio> playlist;
 
     private HashMap<String, EventHandler> requestHandlers;
 
@@ -44,6 +43,7 @@ public class MusicPlayerService extends Service {
 
         // initialize media player
         this.mediaPlayer = new MediaPlayerAdapter();
+        this.mediaPlayer.setEventListener(this);
         this.mediaPlayer.playlistChanged();
 
         // initialize broadcast manager
@@ -53,6 +53,9 @@ public class MusicPlayerService extends Service {
         }
         this.broadcastManager = LocalBroadcastManager.getInstance(this);
         this.broadcastManager.registerReceiver(this.broadcastReceiver, inf);
+
+
+
     }
 
     @Override
@@ -72,7 +75,6 @@ public class MusicPlayerService extends Service {
         public void handleEvent(Intent intent) {
             Intent in = new Intent();
             in.setAction(Protocol.RESPONSE_SONG_LISTING);
-            //in.putParcelableArrayListExtra(Protocol.RESPONSE_SONG_LISTING, playlist);
             broadcastManager.sendBroadcast(in);
         }
     };
@@ -87,19 +89,49 @@ public class MusicPlayerService extends Service {
         }
     };
 
+    /**
+     * Play next track and notify activity of a new track being chosen.
+     */
     private final EventHandler NextTrack = new EventHandler() {
         @Override
-        public void handleEvent(Intent intent) {
+        public void handleEvent(Intent requestIntent) {
             mediaPlayer.playNext();
+
+            Intent intent = new Intent();
+            intent.setAction(Protocol.PLAYER_NEWTRACK_SELECTED);
+            intent.putExtra(Protocol.PLAYER_NEWTRACK_SELECTED, mediaPlayer.getActiveMedia());
+            broadcastManager.sendBroadcast(intent);
         }
     };
 
+    /**
+     * Play previous track and notify activity of a new track being chosen.
+     */
     private final EventHandler PreviousTrack = new EventHandler() {
         @Override
-        public void handleEvent(Intent intent) {
+        public void handleEvent(Intent requestIntent) {
             mediaPlayer.playPrevious();
+
+            Intent intent = new Intent();
+            intent.setAction(Protocol.PLAYER_NEWTRACK_SELECTED);
+            intent.putExtra(Protocol.PLAYER_NEWTRACK_SELECTED, mediaPlayer.getActiveMedia());
+            broadcastManager.sendBroadcast(intent);
         }
     };
+
+    /**
+     * Triggers when playback position of the track is changed.
+     * @param position
+     * @param duration
+     */
+    @Override
+    public void onPlaybackPositionChanged(int position, int duration) {
+        Intent intent = new Intent();
+        intent.setAction(Protocol.PLAYER_PLAYBACK_POSITION_UPDATE);
+        intent.putExtra(Protocol.PLAYER_PLAYBACK_POSITION_DATA, position);
+        intent.putExtra(Protocol.PLAYER_PLAYBACK_DURATION_DATA, duration);
+        broadcastManager.sendBroadcast(intent);
+    }
 
     public class MusicPlayerBinder extends Binder {
         public MusicPlayerService getService() { return MusicPlayerService.this; }
@@ -152,7 +184,8 @@ public class MusicPlayerService extends Service {
                 String c = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
                 String d = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
                 String e = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-                Audio audio = new Audio(a,b,c,d,e);
+                String f = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
+                Audio audio = new Audio(a,b,c,d,e, Integer.parseInt(f));
                 audioList.add(audio);
 
                 cursor.moveToNext();

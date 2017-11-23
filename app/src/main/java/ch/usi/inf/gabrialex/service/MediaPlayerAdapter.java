@@ -2,11 +2,14 @@ package ch.usi.inf.gabrialex.service;
 
 import android.media.AudioTrack;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ch.usi.inf.gabrialex.datastructures.Playlist;
 
@@ -23,13 +26,30 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
     private MediaPlayer mediaPlayer;
     private State currentState;
     private Audio activeMedia;
+    private PlayerStateEventListener eventListener;
+    private Timer timer;
 
+    public void setEventListener(PlayerStateEventListener listener) {
+        this.eventListener = listener;
+    }
 
     public MediaPlayerAdapter() {
         this.currentState = State.PAUSED;
         this.mediaPlayer = new MediaPlayer();
         this.mediaPlayer.setOnCompletionListener(this);
         this.activeMedia = null;
+
+        this.timer = new Timer();
+
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+               PlaybackPositionUpdateTask t = new PlaybackPositionUpdateTask();
+                t.execute();
+            }
+        };
+
+        this.timer.schedule(timerTask, 0, 1000);
     }
 
     public void resume() {
@@ -56,6 +76,9 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         else if (this.currentState == State.PAUSED) {
             this.resume();
         }
+
+
+        eventListener.onPlaybackPositionChanged(this.getPlaybackPosition(), this.activeMedia.getDuration());
     }
 
 
@@ -98,7 +121,6 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
                 this.mediaPlayer.pause();
                 this.currentState = State.PAUSED;
                 this.mediaPlayer.seekTo(0);
-                System.out.println("I am nothere!");
             }
             else {
                 if (this.currentState == State.PLAYING) {
@@ -108,13 +130,12 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
                 if (this.currentState == State.PLAYING) {
                     this.mediaPlayer.start();
                     // contextNew(Time.now(), this.activeMedia)
-                    System.out.println("next play: " + this.activeMedia + " " + this.currentState.toString());
                 }
             }
 
+
+            eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
         }
-
-
     }
 
     /**
@@ -153,10 +174,9 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             }
 
             System.out.println("Prev play: " + this.activeMedia + " " + this.currentState.toString());
+            eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
         }
     }
-
-
 
     public void release() {
         this.mediaPlayer.release();
@@ -182,8 +202,34 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         }
     }
 
+    public Audio getActiveMedia() {
+        return this.activeMedia;
+    }
+
+    public State getState() {
+        return this.currentState;
+    }
+
+    public int getPlaybackPosition() {
+        return this.mediaPlayer.getCurrentPosition();
+    }
+
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
 
+    }
+
+
+    private class PlaybackPositionUpdateTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            if (currentState == State.PLAYING) {
+                int position = mediaPlayer.getCurrentPosition();
+                int duration = activeMedia.getDuration();
+                eventListener.onPlaybackPositionChanged(position, duration);
+            }
+            return null;
+        }
     }
 }

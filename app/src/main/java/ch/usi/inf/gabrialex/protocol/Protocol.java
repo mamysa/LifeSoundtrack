@@ -47,6 +47,14 @@ public class Protocol {
     public final static String PLAYER_PAUSE = "PLAYER_PAUSE";
 
     /**
-     *
+     * Media player picks new track for playback.
      */
+    public final static String PLAYER_NEWTRACK_SELECTED = "PLAYER_NEWTRACKSELECTED";
+
+    /**
+     * PLAYER_PLAYBACK_POSITION
+     */
+    public final static String PLAYER_PLAYBACK_POSITION_UPDATE = "PLAYER_PLAYBACK_POSITION_UPDATE";
+    public final static String PLAYER_PLAYBACK_POSITION_DATA = "PLAYER_PLAYBACK_POSITION_DATA";
+    public final static String PLAYER_PLAYBACK_DURATION_DATA = "PLAYER_PLAYBACK_DURATION_DATA";
 }

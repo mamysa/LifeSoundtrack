@@ -17,6 +17,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.EventLog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,7 +57,9 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
 
         // setup event handlers.
         this.eventHandlers = new HashMap<>();
-        this.eventHandlers.put(Protocol.RESPONSE_SONG_LISTING, this.PlaylistUpdate);
+        this.eventHandlers.put(Protocol.RESPONSE_SONG_LISTING,    this.PlaylistUpdated);
+        this.eventHandlers.put(Protocol.PLAYER_NEWTRACK_SELECTED, this.NewTrackSelected);
+        this.eventHandlers.put(Protocol.PLAYER_PLAYBACK_POSITION_UPDATE, this.PlaybackPositionUpdated);
 
 
         ArrayList<Fragment> fragments = new ArrayList<>();
@@ -174,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
     /**
      * Update ListView component when the playlist is updated.
      */
-    private EventHandler PlaylistUpdate = new EventHandler() {
+    private EventHandler PlaylistUpdated = new EventHandler() {
         @Override
         public void handleEvent(Intent intent) {
             Log.d("PlaylistUpdate", "Updating playlist UI");
@@ -184,6 +187,31 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
                 ArrayList<Audio> playlist = Playlist.getInstance().getPlaylist();
                 playlistFragment.update(playlist);
             }
+        }
+    };
+
+    /**
+     * Fires when the player selects a song to play.
+     */
+    private EventHandler NewTrackSelected = new EventHandler() {
+        @Override
+        public void handleEvent(Intent intent) {
+            Log.d("NewTrackSelected", "Updating playlist UI");
+            Audio audio = intent.getParcelableExtra(Protocol.PLAYER_NEWTRACK_SELECTED);
+            playerControlFragment.updateView(audio);
+        }
+    };
+
+    /**
+     * Fires when media player makes some progress playing some song.
+     */
+    private EventHandler PlaybackPositionUpdated = new EventHandler() {
+        @Override
+        public void handleEvent(Intent intent) {
+            Log.d("PlaybackPositionUpdated", "Updating timestamp");
+            int position = intent.getIntExtra(Protocol.PLAYER_PLAYBACK_POSITION_DATA, 0);
+            int duration = intent.getIntExtra(Protocol.PLAYER_PLAYBACK_DURATION_DATA, 0);
+            playerControlFragment.updatePlaybackPosition(position, duration);
         }
     };
 
