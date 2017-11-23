@@ -170,6 +170,14 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         this.broadcastManager.sendBroadcast(intent);
     }
 
+    @Override
+    public void onSeekBarChanged(int param) {
+        Intent intent = new Intent();
+        intent.setAction(Protocol.PLAYER_SET_POSITION);
+        intent.putExtra(Protocol.PLAYER_SET_POSITION, param);
+        this.broadcastManager.sendBroadcast(intent);
+    }
+
     //============================================================
     // Various responses activity needs to get
     //============================================================

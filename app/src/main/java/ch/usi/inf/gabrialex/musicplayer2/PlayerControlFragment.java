@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,8 @@ public class PlayerControlFragment extends Fragment {
 
 
     private PlayerControlEventListener eventListener;
+    private boolean seekBarUsed = false;
+    private int userSetPosition = 0;
 
     public void setEventListener(PlayerControlEventListener evt) {
         this.eventListener = evt;
@@ -50,12 +53,13 @@ public class PlayerControlFragment extends Fragment {
             }
         });
 
-
         Button prev = getView().findViewById(R.id.previous_button);
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventListener.onPrevButtonPressed();
+                if (!seekBarUsed) {
+                    eventListener.onPrevButtonPressed();
+                }
             }
         });
 
@@ -63,7 +67,34 @@ public class PlayerControlFragment extends Fragment {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventListener.onNextButtonPressed();
+                if (!seekBarUsed) {
+                    eventListener.onNextButtonPressed();
+                }
+            }
+        });
+
+        SeekBar seekBar = getView().findViewById(R.id.playback_seekbar);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if (b) {
+                    //System.out.println("onProgressChanged");
+                    userSetPosition = i;
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                //System.out.println("onStartTracking");
+                seekBarUsed = true;
+                userSetPosition = 0;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                //System.out.println("onStopTracking");
+                eventListener.onSeekBarChanged(userSetPosition);
+                seekBarUsed = false;
             }
         });
     }
@@ -71,15 +102,13 @@ public class PlayerControlFragment extends Fragment {
     public void updateView(Audio t) {
         TextView view = getView().findViewById(R.id.song_title_box);
         view.setText(t.toString());
+
+        SeekBar seekBar = getView().findViewById(R.id.playback_seekbar);
     }
 
     public void updatePlaybackPosition(int position, int duration) {
         TextView playbackText = getView().findViewById(R.id.song_progress_box);
 
-
-        //int seconds = (duration / 1000) % 60;
-        //int minutes = (duration / (1000*60)) % 60;
-        //int minutes = (duration / (1000*60*60)) % 24;
         String durationF = String.format("%02d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(duration),
                 TimeUnit.MILLISECONDS.toSeconds(duration) -
@@ -94,5 +123,10 @@ public class PlayerControlFragment extends Fragment {
 
         playbackText.setText(positionF + " " + durationF);
 
+        if (!this.seekBarUsed) {
+            SeekBar seekBar = getView().findViewById(R.id.playback_seekbar);
+            seekBar.setMax(duration);
+            seekBar.setProgress(position);
+        }
     }
 }

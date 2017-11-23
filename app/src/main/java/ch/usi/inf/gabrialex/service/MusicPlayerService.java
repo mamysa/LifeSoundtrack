@@ -40,6 +40,7 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
         this.requestHandlers.put(Protocol.PLAYER_TOGGLE, this.ToggleTrack);
         this.requestHandlers.put(Protocol.PLAYER_NEXT, this.NextTrack);
         this.requestHandlers.put(Protocol.PLAYER_PREV, this.PreviousTrack);
+        this.requestHandlers.put(Protocol.PLAYER_SET_POSITION, this.SetPlaybackPosition);
 
         // initialize media player
         this.mediaPlayer = new MediaPlayerAdapter();
@@ -116,6 +117,19 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
             intent.setAction(Protocol.PLAYER_NEWTRACK_SELECTED);
             intent.putExtra(Protocol.PLAYER_NEWTRACK_SELECTED, mediaPlayer.getActiveMedia());
             broadcastManager.sendBroadcast(intent);
+        }
+    };
+
+    /**
+     * Triggers when user manipulates seekbar.
+     */
+    private final EventHandler SetPlaybackPosition = new EventHandler() {
+        @Override
+        public void handleEvent(Intent intent) {
+
+            int position =  intent.getIntExtra(Protocol.PLAYER_SET_POSITION, 0);
+            mediaPlayer.setPlaybackPosition(position);
+            //System.out.println("set playback pos " + position);
         }
     };
 

@@ -52,6 +52,11 @@ public class Protocol {
     public final static String PLAYER_NEWTRACK_SELECTED = "PLAYER_NEWTRACKSELECTED";
 
     /**
+     * User manipulates seekbar
+     */
+    public final static String PLAYER_SET_POSITION = "PLAYER_SET_POSITION";
+
+    /**
      * PLAYER_PLAYBACK_POSITION
      */
     public final static String PLAYER_PLAYBACK_POSITION_UPDATE = "PLAYER_PLAYBACK_POSITION_UPDATE";

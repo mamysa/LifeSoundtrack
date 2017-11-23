@@ -77,7 +77,6 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             this.resume();
         }
 
-
         eventListener.onPlaybackPositionChanged(this.getPlaybackPosition(), this.activeMedia.getDuration());
     }
 
@@ -176,6 +175,15 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             System.out.println("Prev play: " + this.activeMedia + " " + this.currentState.toString());
             eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
         }
+    }
+
+    public void setPlaybackPosition(int position) {
+        if (this.activeMedia == null) {
+            return;
+        }
+
+        this.mediaPlayer.seekTo(position);
+        eventListener.onPlaybackPositionChanged(this.mediaPlayer.getCurrentPosition(), this.activeMedia.getDuration());
     }
 
     public void release() {

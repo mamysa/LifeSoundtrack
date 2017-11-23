@@ -8,4 +8,5 @@ public interface PlayerControlEventListener {
     void onPlayPressed();
     void onPrevButtonPressed();
     void onNextButtonPressed();
+    void onSeekBarChanged(int param);
 }
