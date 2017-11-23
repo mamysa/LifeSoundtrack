@@ -25,11 +25,9 @@ public class Playlist {
     }
 
     private ArrayList<Audio> playlist;
-    private int cursor;
 
     private Playlist() {
         this.playlist = new ArrayList<>();
-        this.cursor = 0;
     }
 
     /**
@@ -37,45 +35,54 @@ public class Playlist {
      * @return null when playlist is empty. null is also returned when there are no more songs left
      * in the playlist. Otherwise, pick the next song.
      */
-    public Audio playNext() {
-        if (this.playlist.size() == 0) {
+    public Audio getNext(Audio audio) {
+        if (this.playlistEmpty()) {
             return null;
         }
 
-        this.cursor += 1;
-        if (this.cursor == this.playlist.size()) {
-            // reached end of the playlist, should stop playing. We could also set cursor to the
-            // last track ??
-            this.cursor = this.playlist.size() - 1;
+        int idx = this.playlist.indexOf(audio);
+        if (idx == -1) {
+            return this.getFirst();
+        }
+
+        idx += 1;
+        if (idx == this.playlist.size()) {
             return null;
         }
 
-        this.cursor = Math.max(this.cursor, 0);
-        this.cursor = Math.min(this.cursor, this.playlist.size() - 1);
-        return this.playlist.get(this.cursor);
+        System.out.println(audio + " " + this.playlist.get(idx));
+        return this.playlist.get(idx);
     }
 
     /**
      * Selects previous track to play.
      * @return null if playlist is empty, otherwise pick previous track.
      */
-    public Audio playPrevious() {
-        if (this.playlist.size() == 0) {
+    public Audio getPrevious(Audio audio) {
+        if (this.playlistEmpty()) {
             return null;
         }
 
-        this.cursor -= 1;
-        this.cursor = Math.max(this.cursor, 0);
-        this.cursor = Math.min(this.cursor, this.playlist.size() - 1);
-        return this.playlist.get(this.cursor);
+        int idx = this.playlist.indexOf(audio);
+        if (idx == -1) {
+            return this.getFirst();
+        }
+
+        idx -= 1;
+        if (idx < 0) {
+           return null;
+        }
+
+        System.out.println(audio + " " + this.playlist.get(idx));
+        return this.playlist.get(idx);
     }
 
-    public Audio playCurrent() {
+    public Audio getFirst() {
         if (this.playlist.size() == 0) {
             return null;
         }
 
-        return this.playlist.get(this.cursor);
+        return this.playlist.get(0);
     }
 
     /**
@@ -92,5 +99,9 @@ public class Playlist {
      */
     public ArrayList<Audio> getPlaylist() {
         return this.playlist;
+    }
+
+    public boolean playlistEmpty() {
+        return this.playlist.size() == 0;
     }
 }
