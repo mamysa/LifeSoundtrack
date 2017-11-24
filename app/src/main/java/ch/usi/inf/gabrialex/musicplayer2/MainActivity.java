@@ -219,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
             Log.d("NewTrackSelected", "Updating playlist UI");
             Audio audio = intent.getParcelableExtra(Protocol.PLAYER_NEWTRACK_SELECTED);
             playerControlFragment.updateView(audio);
+
         }
     };
 
@@ -296,7 +297,6 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         public ScreenSlidePagerAdapter(FragmentManager fm, ArrayList<Fragment> fragments) {
             super(fm);
             this.fragments = fragments;
-
         }
 
         @Override

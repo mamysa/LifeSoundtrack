@@ -105,6 +105,13 @@ public class Playlist {
         return this.playlist;
     }
 
+    /**
+     * Clear ArrayList containing playlist.
+     */
+    public void clear() {
+        this.playlist.clear();
+    }
+
     public boolean playlistEmpty() {
         return this.playlist.size() == 0;
     }

@@ -45,7 +45,7 @@ public class PlayerControlFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Button play = getView().findViewById(R.id.play_button);
+        final Button play = getView().findViewById(R.id.play_button);
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -6,4 +6,5 @@ package ch.usi.inf.gabrialex.service;
 
 public interface PlayerStateEventListener {
     void onPlaybackPositionChanged(int position, int duration);
+    void onTrackSelected(Audio param);
 }

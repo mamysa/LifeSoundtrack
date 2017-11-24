@@ -115,6 +115,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
                 this.mediaPlayer.start();
                 // contextNew(Time.now(), this.activeMedia)
                 eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
+                eventListener.onTrackSelected(this.activeMedia);
             }
         }
     }
@@ -157,6 +158,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
 
 
             eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
+            eventListener.onTrackSelected(this.activeMedia);
         }
     }
 
@@ -197,6 +199,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
 
             System.out.println("Prev play: " + this.activeMedia + " " + this.currentState.toString());
             eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
+            eventListener.onTrackSelected(this.activeMedia);
         }
     }
 
@@ -225,6 +228,9 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             }
             Audio track = Playlist.getInstance().getFirst();
             this.loadResource(track);
+            eventListener.onPlaybackPositionChanged(this.mediaPlayer.getCurrentPosition(), this.activeMedia.getDuration());
+            eventListener.onTrackSelected(this.activeMedia);
+            System.out.println("playlistChanged" + this.activeMedia);
         }
     }
 
@@ -234,13 +240,6 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         }
     }
 
-    public Audio getActiveMedia() {
-        return this.activeMedia;
-    }
-
-    public State getState() {
-        return this.currentState;
-    }
 
     public int getPlaybackPosition() {
         return this.mediaPlayer.getCurrentPosition();
@@ -248,7 +247,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-
+        //TODO
     }
 
 
