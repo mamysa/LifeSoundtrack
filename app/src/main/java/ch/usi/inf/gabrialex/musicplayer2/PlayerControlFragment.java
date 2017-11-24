@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
 
+import ch.usi.inf.gabrialex.protocol.MediaPlayerState;
 import ch.usi.inf.gabrialex.service.Audio;
 
 /**
@@ -104,6 +105,17 @@ public class PlayerControlFragment extends Fragment {
         view.setText(t.toString());
 
         SeekBar seekBar = getView().findViewById(R.id.playback_seekbar);
+    }
+
+
+    /**
+     * Update text on play/pause button when media player changes its state.
+     * @param state
+     */
+    public void updatePlayerState(MediaPlayerState state) {
+        final Button play = getView().findViewById(R.id.play_button);
+        if (state == MediaPlayerState.PAUSED) play.setText("Play");
+        else play.setText("Pause");
     }
 
     public void updatePlaybackPosition(int position, int duration) {

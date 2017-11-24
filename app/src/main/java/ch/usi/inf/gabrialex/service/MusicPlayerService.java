@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ch.usi.inf.gabrialex.datastructures.Playlist;
+import ch.usi.inf.gabrialex.protocol.MediaPlayerState;
 import ch.usi.inf.gabrialex.protocol.Protocol;
 
 public class MusicPlayerService extends Service implements PlayerStateEventListener {
@@ -159,6 +160,19 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
         Intent intent = new Intent();
         intent.setAction(Protocol.PLAYER_NEWTRACK_SELECTED);
         intent.putExtra(Protocol.PLAYER_NEWTRACK_SELECTED, param);
+        broadcastManager.sendBroadcast(intent);
+    }
+
+
+    /**
+     * Triggers when media player either pauses or resumes
+     * @param param
+     */
+    @Override
+    public void onStateChanged(MediaPlayerState param) {
+        Intent intent = new Intent();
+        intent.setAction(Protocol.PLAYER_STATE_CHANGE);
+        intent.putExtra(Protocol.PLAYER_STATE_CHANGE, param);
         broadcastManager.sendBroadcast(intent);
     }
 

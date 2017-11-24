@@ -12,19 +12,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ch.usi.inf.gabrialex.datastructures.Playlist;
+import ch.usi.inf.gabrialex.protocol.MediaPlayerState;
 
 /**
  * Created by alex on 17.11.17.
  */
 
-enum State {
-    PLAYING,
-    PAUSED,
-}
-
 public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
     private MediaPlayer mediaPlayer;
-    private State currentState;
+    private MediaPlayerState currentState;
     private Audio activeMedia;
     private PlayerStateEventListener eventListener;
     private Timer timer;
@@ -34,7 +30,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
     }
 
     public MediaPlayerAdapter() {
-        this.currentState = State.PAUSED;
+        this.currentState = MediaPlayerState.PAUSED;
         this.mediaPlayer = new MediaPlayer();
         this.mediaPlayer.setOnCompletionListener(this);
         this.activeMedia = null;
@@ -55,14 +51,15 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
     public void resume() {
         // contextResume(Time.getTime, this.activeMedia)
         this.mediaPlayer.start();
-        this.currentState = State.PLAYING;
-        System.out.println("Resume: " + this.activeMedia);
+        this.currentState = MediaPlayerState.PLAYING;
+        this.eventListener.onStateChanged(this.currentState);
     }
 
     public void pause() {
         // contextPause(Time.getTime, this.activeMedia)
-        this.currentState = State.PAUSED;
+        this.currentState = MediaPlayerState.PAUSED;
         this.mediaPlayer.pause();
+        this.eventListener.onStateChanged(this.currentState);
     }
 
     public void toggle() {
@@ -70,10 +67,10 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             return;
         }
 
-        if (this.currentState == State.PLAYING) {
+        if (this.currentState == MediaPlayerState.PLAYING) {
             this.pause();
         }
-        else if (this.currentState == State.PAUSED) {
+        else if (this.currentState == MediaPlayerState.PAUSED) {
             this.resume();
         }
 
@@ -106,16 +103,17 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
 
             if (instance.contains(audio)) {
                 // contextEnd(time.now(), this.activeMedia)
-                if (this.currentState == State.PLAYING) {
+                if (this.currentState == MediaPlayerState.PLAYING) {
                     this.mediaPlayer.pause();
                 }
 
                 this.loadResource(audio);
-                this.currentState = State.PLAYING;
+                this.currentState = MediaPlayerState.PLAYING;
                 this.mediaPlayer.start();
                 // contextNew(Time.now(), this.activeMedia)
-                eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
-                eventListener.onTrackSelected(this.activeMedia);
+                this.eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
+                this.eventListener.onTrackSelected(this.activeMedia);
+                this.eventListener.onStateChanged(this.currentState);
             }
         }
     }
@@ -142,23 +140,23 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             Audio audio = instance.getNext(this.activeMedia);
             if (audio == null) {
                 this.mediaPlayer.pause();
-                this.currentState = State.PAUSED;
+                this.currentState = MediaPlayerState.PAUSED;
                 this.mediaPlayer.seekTo(0);
+                this.eventListener.onStateChanged(this.currentState);
             }
             else {
-                if (this.currentState == State.PLAYING) {
+                if (this.currentState == MediaPlayerState.PLAYING) {
                     this.mediaPlayer.pause();
                 }
                 this.loadResource(audio);
-                if (this.currentState == State.PLAYING) {
+                if (this.currentState == MediaPlayerState.PLAYING) {
                     this.mediaPlayer.start();
                     // contextNew(Time.now(), this.activeMedia)
                 }
             }
 
-
-            eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
-            eventListener.onTrackSelected(this.activeMedia);
+            this.eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
+            this.eventListener.onTrackSelected(this.activeMedia);
         }
     }
 
@@ -186,20 +184,20 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             }
             else {
                 // contextEnd(Time.now(), this.activeMedia);
-                if (this.currentState == State.PLAYING) {
+                if (this.currentState == MediaPlayerState.PLAYING) {
                     this.mediaPlayer.pause();
                 }
 
                 this.loadResource(audio);
-                if (this.currentState == State.PLAYING) {
+                if (this.currentState == MediaPlayerState.PLAYING) {
                     //contextNew(Time.now(), this.activeMedia);
                     this.mediaPlayer.start();
                 }
             }
 
             System.out.println("Prev play: " + this.activeMedia + " " + this.currentState.toString());
-            eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
-            eventListener.onTrackSelected(this.activeMedia);
+            this.eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
+            this.eventListener.onTrackSelected(this.activeMedia);
         }
     }
 
@@ -209,7 +207,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         }
 
         this.mediaPlayer.seekTo(position);
-        eventListener.onPlaybackPositionChanged(this.mediaPlayer.getCurrentPosition(), this.activeMedia.getDuration());
+        this.eventListener.onPlaybackPositionChanged(this.mediaPlayer.getCurrentPosition(), this.activeMedia.getDuration());
     }
 
 
@@ -228,8 +226,8 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             }
             Audio track = Playlist.getInstance().getFirst();
             this.loadResource(track);
-            eventListener.onPlaybackPositionChanged(this.mediaPlayer.getCurrentPosition(), this.activeMedia.getDuration());
-            eventListener.onTrackSelected(this.activeMedia);
+            this.eventListener.onPlaybackPositionChanged(this.mediaPlayer.getCurrentPosition(), this.activeMedia.getDuration());
+            this.eventListener.onTrackSelected(this.activeMedia);
             System.out.println("playlistChanged" + this.activeMedia);
         }
     }
@@ -255,7 +253,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            if (currentState == State.PLAYING) {
+            if (currentState == MediaPlayerState.PLAYING) {
                 int position = mediaPlayer.getCurrentPosition();
                 int duration = activeMedia.getDuration();
                 eventListener.onPlaybackPositionChanged(position, duration);

@@ -5,6 +5,8 @@ package ch.usi.inf.gabrialex.protocol;
  */
 
 public class Protocol {
+
+    public final static String PLAYER_STATE_CHANGE = "PLAYER_STATE_CHANGE";
     /**
      * Request playlist from the service
      */

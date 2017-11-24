@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ch.usi.inf.gabrialex.datastructures.Playlist;
+import ch.usi.inf.gabrialex.protocol.MediaPlayerState;
 import ch.usi.inf.gabrialex.protocol.Protocol;
 import ch.usi.inf.gabrialex.service.Audio;
 import ch.usi.inf.gabrialex.service.EventHandler;
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         this.eventHandlers.put(Protocol.RESPONSE_SONG_LISTING,    this.PlaylistUpdated);
         this.eventHandlers.put(Protocol.PLAYER_NEWTRACK_SELECTED, this.NewTrackSelected);
         this.eventHandlers.put(Protocol.PLAYER_PLAYBACK_POSITION_UPDATE, this.PlaybackPositionUpdated);
-
+        this.eventHandlers.put(Protocol.PLAYER_STATE_CHANGE, this.PlayerStateChanged);
 
         ArrayList<Fragment> fragments = new ArrayList<>();
         this.playlistFragment = new PlaylistFragment();
@@ -233,6 +234,15 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
             int position = intent.getIntExtra(Protocol.PLAYER_PLAYBACK_POSITION_DATA, 0);
             int duration = intent.getIntExtra(Protocol.PLAYER_PLAYBACK_DURATION_DATA, 0);
             playerControlFragment.updatePlaybackPosition(position, duration);
+        }
+    };
+
+    private EventHandler PlayerStateChanged = new EventHandler() {
+        @Override
+        public void handleEvent(Intent intent) {
+            MediaPlayerState state = (MediaPlayerState)intent.getSerializableExtra(Protocol.PLAYER_STATE_CHANGE);
+            playerControlFragment.updatePlayerState(state);
+            //System.out.println("Current state " + state.toString());
         }
     };
 
