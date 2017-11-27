@@ -238,16 +238,14 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         }
     }
 
-
     public int getPlaybackPosition() {
         return this.mediaPlayer.getCurrentPosition();
     }
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        //TODO
+        this.playNext();
     }
-
 
     private class PlaybackPositionUpdateTask extends AsyncTask<Void, Void, Void> {
 
