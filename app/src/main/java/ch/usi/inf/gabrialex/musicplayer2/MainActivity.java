@@ -201,8 +201,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
     private EventHandler PlaylistUpdated = new EventHandler() {
         @Override
         public void handleEvent(Intent intent) {
-            Log.d("PlaylistUpdate", "Updating playlist UI");
-
+            //Log.d("PlaylistUpdate", "Updating playlist UI");
             playlist = intent.getParcelableArrayListExtra(Protocol.RESPONSE_SONG_LISTING);
             synchronized (Playlist.class) {
                 ArrayList<Audio> playlist = Playlist.getInstance().getPlaylist();
@@ -217,7 +216,6 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
     private EventHandler NewTrackSelected = new EventHandler() {
         @Override
         public void handleEvent(Intent intent) {
-            Log.d("NewTrackSelected", "Updating playlist UI");
             Audio audio = intent.getParcelableExtra(Protocol.PLAYER_NEWTRACK_SELECTED);
             playerControlFragment.updateView(audio);
 

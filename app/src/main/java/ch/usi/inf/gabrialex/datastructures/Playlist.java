@@ -54,7 +54,6 @@ public class Playlist {
             return null;
         }
 
-        System.out.println(audio + " " + this.playlist.get(idx));
         return this.playlist.get(idx);
     }
 
@@ -77,7 +76,6 @@ public class Playlist {
            return null;
         }
 
-        System.out.println(audio + " " + this.playlist.get(idx));
         return this.playlist.get(idx);
     }
 

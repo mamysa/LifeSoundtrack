@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import ch.usi.inf.gabrialex.datastructures.MusicContext;
 import ch.usi.inf.gabrialex.datastructures.Playlist;
 import ch.usi.inf.gabrialex.protocol.MediaPlayerState;
 
@@ -48,18 +49,14 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         this.timer.schedule(timerTask, 0, 1000);
     }
 
-    public void resume() {
-        // contextResume(Time.getTime, this.activeMedia)
-        this.mediaPlayer.start();
+    private void resume() {
         this.currentState = MediaPlayerState.PLAYING;
-        this.eventListener.onStateChanged(this.currentState);
+        this.mediaPlayer.start();
     }
 
-    public void pause() {
-        // contextPause(Time.getTime, this.activeMedia)
+    private void pause() {
         this.currentState = MediaPlayerState.PAUSED;
         this.mediaPlayer.pause();
-        this.eventListener.onStateChanged(this.currentState);
     }
 
     public void toggle() {
@@ -74,7 +71,9 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             this.resume();
         }
 
-        eventListener.onPlaybackPositionChanged(this.getPlaybackPosition(), this.activeMedia.getDuration());
+        MusicContext.getInstance().timestamp();
+        this.eventListener.onStateChanged(this.currentState);
+        this.eventListener.onPlaybackPositionChanged(this.getPlaybackPosition(), this.activeMedia.getDuration());
     }
 
 
@@ -93,27 +92,39 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         }
     }
 
+    /**
+     * Set audio track to play. Controlled by list view.
+     * @param audio
+     */
     public void setTrack(Audio audio) {
         synchronized (Playlist.class) {
             Playlist instance = Playlist.getInstance();
+            MusicContext context = MusicContext.getInstance();
 
             if (instance.playlistEmpty()) {
                 return;
             }
 
             if (instance.contains(audio)) {
-                // contextEnd(time.now(), this.activeMedia)
-                if (this.currentState == MediaPlayerState.PLAYING) {
-                    this.mediaPlayer.pause();
+                if (this.activeMedia.equals(audio)) {
+                    this.mediaPlayer.seekTo(0);
+                    this.eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
                 }
+                else {
+                    if (this.currentState == MediaPlayerState.PLAYING) {
+                        this.mediaPlayer.pause();
+                        context.timestamp();
+                    }
 
-                this.loadResource(audio);
-                this.currentState = MediaPlayerState.PLAYING;
-                this.mediaPlayer.start();
-                // contextNew(Time.now(), this.activeMedia)
-                this.eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
-                this.eventListener.onTrackSelected(this.activeMedia);
-                this.eventListener.onStateChanged(this.currentState);
+                    this.loadResource(audio);
+                    this.currentState = MediaPlayerState.PLAYING;
+                    this.mediaPlayer.start();
+                    context.trackChanged(this.activeMedia);
+                    context.timestamp();
+                    this.eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
+                    this.eventListener.onTrackSelected(this.activeMedia);
+                    this.eventListener.onStateChanged(this.currentState);
+                }
             }
         }
     }
@@ -131,15 +142,19 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
     public void playNext() {
         synchronized (Playlist.class) {
             Playlist instance = Playlist.getInstance();
+            MusicContext context = MusicContext.getInstance();
 
             if (instance.playlistEmpty()) {
                 return;
             }
 
-            // contextEnd(Time.now(), this.activeMedia);
             Audio audio = instance.getNext(this.activeMedia);
             if (audio == null) {
-                this.mediaPlayer.pause();
+                if (this.currentState == MediaPlayerState.PLAYING) {
+                    this.mediaPlayer.pause();
+                    context.timestamp();
+                }
+                context.trackChanged(this.activeMedia);
                 this.currentState = MediaPlayerState.PAUSED;
                 this.mediaPlayer.seekTo(0);
                 this.eventListener.onStateChanged(this.currentState);
@@ -147,11 +162,13 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             else {
                 if (this.currentState == MediaPlayerState.PLAYING) {
                     this.mediaPlayer.pause();
+                    context.timestamp();
                 }
                 this.loadResource(audio);
+                context.trackChanged(this.activeMedia);
                 if (this.currentState == MediaPlayerState.PLAYING) {
                     this.mediaPlayer.start();
-                    // contextNew(Time.now(), this.activeMedia)
+                    context.timestamp();
                 }
             }
 
@@ -173,6 +190,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
 
         synchronized (Playlist.class) {
             Playlist instance = Playlist.getInstance();
+            MusicContext context = MusicContext.getInstance();
 
             if (instance.playlistEmpty()) {
                 return;
@@ -183,19 +201,18 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
                 this.mediaPlayer.seekTo(0);
             }
             else {
-                // contextEnd(Time.now(), this.activeMedia);
                 if (this.currentState == MediaPlayerState.PLAYING) {
                     this.mediaPlayer.pause();
+                    context.timestamp();
                 }
-
                 this.loadResource(audio);
+                context.trackChanged(this.activeMedia);
                 if (this.currentState == MediaPlayerState.PLAYING) {
-                    //contextNew(Time.now(), this.activeMedia);
                     this.mediaPlayer.start();
+                    context.timestamp();
                 }
             }
 
-            System.out.println("Prev play: " + this.activeMedia + " " + this.currentState.toString());
             this.eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
             this.eventListener.onTrackSelected(this.activeMedia);
         }
@@ -220,15 +237,16 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
 
         synchronized (Playlist.class) {
             Playlist instance = Playlist.getInstance();
+            MusicContext context = MusicContext.getInstance();
 
             if (instance.playlistEmpty()) {
                 return;
             }
             Audio track = Playlist.getInstance().getFirst();
             this.loadResource(track);
-            this.eventListener.onPlaybackPositionChanged(this.mediaPlayer.getCurrentPosition(), this.activeMedia.getDuration());
+            context.trackChanged(this.activeMedia);
+            this.eventListener.onPlaybackPositionChanged(0, this.activeMedia.getDuration());
             this.eventListener.onTrackSelected(this.activeMedia);
-            System.out.println("playlistChanged" + this.activeMedia);
         }
     }
 
