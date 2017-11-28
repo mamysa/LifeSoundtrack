@@ -3,6 +3,7 @@ package ch.usi.inf.gabrialex.service;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -219,7 +220,14 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
         String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
         Cursor cursor = resolver.query(uri, null, selection, null, sortOrder);
         Log.d("getMusicListing()", "getting music");
-
+        Cursor indexCursor = helper.getReadableDatabase().query("Tracks", new String [] {"MAX(_id)"}, null, null, null, null, null);
+        indexCursor.moveToFirst();
+        int lastIndex=0;
+        if (indexCursor.getString(0) != null){
+            lastIndex= Integer.parseInt(indexCursor.getString(0))+1;
+        }
+        indexCursor.close();
+        Cursor oldMusic;
         if (cursor != null) {
             cursor.moveToFirst();
 
@@ -233,8 +241,30 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
                 Audio audio = new Audio(a,b,c,d,e, Integer.parseInt(f));
                 audioList.add(audio);
 
-                // try to insert this into DB
+                Log.d("getMusicListing()", "SELECT count(*) FROM Tracks WHERE title ='"+a+"'");
 
+                oldMusic = helper.getReadableDatabase().rawQuery("SELECT count(*) FROM Tracks WHERE data ='"+a+"'", null );
+                oldMusic.moveToFirst();
+                if (oldMusic.getString(0).equals("0")){
+                    Log.d("getMusicListing()", "can add "+ a);
+                    ContentValues values = new ContentValues();
+                    values.put("_id", lastIndex);
+                    values.put("data", a);
+                    values.put("track", b);
+                    values.put("title", c);
+                    values.put("album", d);
+                    values.put("artist", e);
+                    values.put("duration", f);
+                    helper.getWritableDatabase().insert("Tracks", null, values);
+                    lastIndex++;
+                }
+                else {
+                    Log.d("getMusicListing()", "cannot add  "+ a);
+
+                }
+
+
+                // try to insert this into DB
                 cursor.moveToNext();
             }
             cursor.close();
