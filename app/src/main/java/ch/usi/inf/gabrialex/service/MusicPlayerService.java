@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ch.usi.inf.gabrialex.datastructures.Playlist;
+import ch.usi.inf.gabrialex.db.DBHelper;
 import ch.usi.inf.gabrialex.protocol.MediaPlayerState;
 import ch.usi.inf.gabrialex.protocol.Protocol;
 
@@ -203,6 +204,7 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
      * @return FIXME THIS IS NOT SUPPOSED TO BE HERE
      */
     public void getMusicListing() {
+        DBHelper helper = DBHelper.getInstance(this);
         ArrayList<Audio> audioList = new ArrayList<>();
         // TODO @refactor put permission checking logic into seperate method!
         if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
@@ -230,6 +232,8 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
                 String f = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
                 Audio audio = new Audio(a,b,c,d,e, Integer.parseInt(f));
                 audioList.add(audio);
+
+                // try to insert this into DB
 
                 cursor.moveToNext();
             }
