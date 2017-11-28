@@ -220,14 +220,8 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
         String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
         Cursor cursor = resolver.query(uri, null, selection, null, sortOrder);
         Log.d("getMusicListing()", "getting music");
-        Cursor indexCursor = helper.getReadableDatabase().query("Tracks", new String [] {"MAX(_id)"}, null, null, null, null, null);
-        indexCursor.moveToFirst();
-        int lastIndex=0;
-        if (indexCursor.getString(0) != null){
-            lastIndex= Integer.parseInt(indexCursor.getString(0))+1;
-        }
-        indexCursor.close();
         Cursor oldMusic;
+
         if (cursor != null) {
             cursor.moveToFirst();
 
@@ -241,14 +235,15 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
                 Audio audio = new Audio(a,b,c,d,e, Integer.parseInt(f));
                 audioList.add(audio);
 
-                Log.d("getMusicListing()", "SELECT count(*) FROM Tracks WHERE title ='"+a+"'");
-
+                // TODO @refactor maybe goes on its own method?
+                /*
+                If the music file is not found in the DB, then add it
+                 */
                 oldMusic = helper.getReadableDatabase().rawQuery("SELECT count(*) FROM Tracks WHERE data ='"+a+"'", null );
                 oldMusic.moveToFirst();
+                //File not found in the DB-> add the file
                 if (oldMusic.getString(0).equals("0")){
-                    Log.d("getMusicListing()", "can add "+ a);
                     ContentValues values = new ContentValues();
-                    values.put("_id", lastIndex);
                     values.put("data", a);
                     values.put("track", b);
                     values.put("title", c);
@@ -256,9 +251,8 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
                     values.put("artist", e);
                     values.put("duration", f);
                     helper.getWritableDatabase().insert("Tracks", null, values);
-                    lastIndex++;
                 }
-                else {
+                else {//File already in the DB-> do nothing
                     Log.d("getMusicListing()", "cannot add  "+ a);
 
                 }
