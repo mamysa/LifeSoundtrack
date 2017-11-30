@@ -10,12 +10,15 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import ch.usi.inf.gabrialex.datastructures.MusicContext;
+
 public class LocationService extends Service {
         private static final String TAG = "LOCATION";
         private LocationManager mLocationManager = null;
         private static final int LOCATION_INTERVAL = 1000;
         private static final float LOCATION_DISTANCE = 10f;
         private Binder binder = new LocationService.LocationServiceBinder();
+        private MusicContext musicContext = MusicContext.getInstance();
         private class LocationListener implements android.location.LocationListener
         {
             Location mLastLocation;
@@ -31,6 +34,7 @@ public class LocationService extends Service {
             {
                 Log.e(TAG, "onLocationChanged: " + location);
                 mLastLocation.set(location);
+                musicContext.setLastLocation(location);
             }
 
 

@@ -4,6 +4,8 @@ package ch.usi.inf.gabrialex.datastructures;
  * Created by alex on 27.11.17.
  */
 
+import android.location.Location;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -30,6 +32,7 @@ public class MusicContext {
 
     private Audio activeMedia;
     private ArrayList<Date> dates;
+    private Location lastLocation;
 
     private MusicContext() {
         this.dates = new ArrayList<>();
@@ -47,6 +50,10 @@ public class MusicContext {
 
         this.activeMedia = audio;
         this.dates.clear();
+    }
+
+    public void setLastLocation(Location lastLocation) {
+        this.lastLocation = lastLocation;
     }
 
     public void timestamp() {
