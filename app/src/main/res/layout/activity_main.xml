@@ -4,14 +4,12 @@
     android:layout_width="match_parent"
     android:screenOrientation="portrait"
     android:layout_height="match_parent" >
-    
-    
+
+
     <android.support.v4.view.ViewPager
         android:id="@+id/fragment_container_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </android.support.v4.view.ViewPager>
-
+        android:layout_height="300dp"></android.support.v4.view.ViewPager>
 
     <!--
     <LinearLayout

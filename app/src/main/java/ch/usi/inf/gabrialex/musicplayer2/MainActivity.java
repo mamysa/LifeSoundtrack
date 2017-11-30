@@ -1,6 +1,7 @@
 package ch.usi.inf.gabrialex.musicplayer2;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,7 +9,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -23,6 +26,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,12 +52,13 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
     private PlayerControlFragment playerControlFragment;
     private PlaylistFragment playlistFragment;
     private HashMap<String, EventHandler> eventHandlers;
-
+    private FusedLocationProviderClient mFusedLocationClient;
 
     /**
      * onCreate
      * @param savedInstanceState
      */
+    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
 
         // setup event handlers.
         this.eventHandlers = new HashMap<>();
-        this.eventHandlers.put(Protocol.RESPONSE_SONG_LISTING,    this.PlaylistUpdated);
+        this.eventHandlers.put(Protocol.RESPONSE_SONG_LISTING, this.PlaylistUpdated);
         this.eventHandlers.put(Protocol.PLAYER_NEWTRACK_SELECTED, this.NewTrackSelected);
         this.eventHandlers.put(Protocol.PLAYER_PLAYBACK_POSITION_UPDATE, this.PlaybackPositionUpdated);
         this.eventHandlers.put(Protocol.PLAYER_STATE_CHANGE, this.PlayerStateChanged);
@@ -72,16 +80,28 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         this.playerControlFragment.setEventListener(this);
         fragments.add(this.playerControlFragment);
 
-        this.viewPager = (ViewPager)findViewById(R.id.fragment_container_pager);
+        this.viewPager = (ViewPager) findViewById(R.id.fragment_container_pager);
         this.pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
         this.viewPager.setAdapter(this.pagerAdapter);
 
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         Intent intent = new Intent(this, MusicPlayerService.class);
         bindService(intent, this.musicServiceConnection, Context.BIND_AUTO_CREATE);
         this.broadcastManager = LocalBroadcastManager.getInstance(this);
 
-        this.requestUserForPermissions();
+        //this.requestUserForPermissions();
+
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            Log.d("LOCATION", "LOCATION OTTENUTA");
+                        }
+                    }
+                });
     }
 
     /**
@@ -164,11 +184,13 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
     /**
      * Sends message to the server to pause / resume current track.
      */
+     @SuppressLint("MissingPermission")
      @Override
     public void onPlayPressed() {
         Intent intent = new Intent();
         intent.setAction(Protocol.PLAYER_TOGGLE);
         this.broadcastManager.sendBroadcast(intent);
+        this.mFusedLocationClient.getLastLocation();
     }
 
     @Override
@@ -271,9 +293,11 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
 
     private void requestUserForPermissions() {
         if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
+            != PackageManager.PERMISSION_GRANTED || checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED || checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
 
-            String[] req = {Manifest.permission.READ_EXTERNAL_STORAGE};
+            String[] req = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
             requestPermissions(req, 10);
         }
     }
