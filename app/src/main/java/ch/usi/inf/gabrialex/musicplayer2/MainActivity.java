@@ -39,6 +39,7 @@ import ch.usi.inf.gabrialex.protocol.MediaPlayerState;
 import ch.usi.inf.gabrialex.protocol.Protocol;
 import ch.usi.inf.gabrialex.service.Audio;
 import ch.usi.inf.gabrialex.service.EventHandler;
+import ch.usi.inf.gabrialex.service.LocationService;
 import ch.usi.inf.gabrialex.service.MusicPlayerService;
 
 public class MainActivity extends AppCompatActivity implements PlayerControlEventListener {
@@ -52,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
     private PlayerControlFragment playerControlFragment;
     private PlaylistFragment playlistFragment;
     private HashMap<String, EventHandler> eventHandlers;
-    private FusedLocationProviderClient mFusedLocationClient;
 
     /**
      * onCreate
@@ -84,24 +84,13 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         this.pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
         this.viewPager.setAdapter(this.pagerAdapter);
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         Intent intent = new Intent(this, MusicPlayerService.class);
         bindService(intent, this.musicServiceConnection, Context.BIND_AUTO_CREATE);
         this.broadcastManager = LocalBroadcastManager.getInstance(this);
+        Intent locationIntent = new Intent(this, LocationService.class);
+        bindService(locationIntent, this.locationServiceConnection, Context.BIND_AUTO_CREATE);
 
-        //this.requestUserForPermissions();
-
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            Log.d("LOCATION", "LOCATION OTTENUTA");
-                        }
-                    }
-                });
     }
 
     /**
@@ -190,7 +179,6 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         Intent intent = new Intent();
         intent.setAction(Protocol.PLAYER_TOGGLE);
         this.broadcastManager.sendBroadcast(intent);
-        this.mFusedLocationClient.getLastLocation();
     }
 
     @Override
@@ -290,6 +278,15 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         @Override
         public void onServiceDisconnected(ComponentName componentName) { }
     };
+
+            private ServiceConnection locationServiceConnection = new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                    LocationService.LocationServiceBinder b = (LocationService.LocationServiceBinder)iBinder;
+                }
+                @Override
+                public void onServiceDisconnected(ComponentName componentName) { }
+            };
 
     private void requestUserForPermissions() {
         if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
