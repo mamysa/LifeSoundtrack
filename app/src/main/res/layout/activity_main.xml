@@ -1,62 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:screenOrientation="portrait"
-    android:layout_height="match_parent" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/fragment_container_pager"
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="300dp"></android.support.v4.view.ViewPager>
-
-    <!--
-    <LinearLayout
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="300dp"
+        android:orientation="vertical"
+        android:id="@+id/playlist_fragment">
 
         <ListView
-        android:id="@+id/TrackListView"
+            android:id="@+id/playlist_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></ListView>
+    </FrameLayout>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="0.1"
-        android:layout_gravity="top"
-        />
+        android:orientation="vertical"
+        android:id="@+id/playcontroll_fragment">
 
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/PlayButton"
-            android:layout_gravity="bottom"
-        android:layout_weight="0.4"
-        android:layout_width="match_parent"
-        android:text="play"
-        android:layout_height="wrap_content"
-        />
+            <TextView
+                android:id="@+id/song_title_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        <Button
+            <TextView
+                android:id="@+id/song_progress_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        android:id="@+id/NextTrack"
-        android:layout_gravity="bottom"
-        android:layout_weight="0.4"
-        android:layout_width="match_parent"
-        android:text="next"
-        android:layout_height="wrap_content"
-        />
+            <Button
+                android:id="@+id/play_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Play" />
 
-        <Button
+            <Button
+                android:id="@+id/previous_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Previous" />
 
-        android:id="@+id/PrevTrack"
-        android:layout_gravity="bottom"
-        android:layout_weight="0.4"
-        android:layout_width="match_parent"
-        android:text="prev"
-        android:layout_height="wrap_content"
-        />
+            <Button
+                android:id="@+id/next_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Next" />
 
-    </LinearLayout>
-    -->
+            <SeekBar
+                android:id="@+id/playback_seekbar"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
 
-</FrameLayout>
+        </LinearLayout>
+
+
+    </FrameLayout>
+</LinearLayout>

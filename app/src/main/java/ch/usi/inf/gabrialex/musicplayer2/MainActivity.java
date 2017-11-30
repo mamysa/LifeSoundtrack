@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -80,9 +81,17 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         this.playerControlFragment.setEventListener(this);
         fragments.add(this.playerControlFragment);
 
-        this.viewPager = (ViewPager) findViewById(R.id.fragment_container_pager);
+        /*this.viewPager = (ViewPager) findViewById(R.id.fragment_container_pager);
         this.pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
         this.viewPager.setAdapter(this.pagerAdapter);
+*/
+        FragmentTransaction transaction =
+                getSupportFragmentManager().beginTransaction();
+
+        transaction.add(R.id.playlist_fragment, playlistFragment);
+        transaction.add(R.id.playcontroll_fragment, playerControlFragment);
+
+        transaction.commit();
 
 
         Intent intent = new Intent(this, MusicPlayerService.class);
@@ -317,6 +326,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
     }
 
 
+    // TODO remove this and use player fragment together with playlist fragment
     /**
      * Adapter for PageView.
      */
