@@ -80,8 +80,8 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         FragmentTransaction transaction =
                 getSupportFragmentManager().beginTransaction();
 
-        transaction.add(R.id.playlist_fragment, playlistFragment);
-        transaction.add(R.id.playcontroll_fragment, playerControlFragment);
+        transaction.add(R.id.playlist, playlistFragment);
+        transaction.add(R.id.controll, playerControlFragment);
 
         transaction.commit();
 
