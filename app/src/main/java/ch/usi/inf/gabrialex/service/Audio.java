@@ -18,14 +18,15 @@ public class Audio implements Comparable<Audio>, Parcelable {
     private String album;
     private String artist;
     private int length;
-
-    public Audio(String data, String tracknum, String title, String album, String artist, int length) {
+    private int id;
+    public Audio(String data, String tracknum, String title, String album, String artist, int length, int id) {
         this.tracknum = tracknum;
         this.data = data;
         this.title = title;
         this.album = album;
         this.artist = artist;
         this.length = length;
+        this.id = id;
     }
 
     public Audio(Parcel p) {
@@ -35,6 +36,7 @@ public class Audio implements Comparable<Audio>, Parcelable {
         this.album = p.readString();
         this.artist = p.readString();
         this.length = p.readInt();
+        this.id = p.readInt();
     }
 
     public String getTracknum() {
@@ -58,10 +60,11 @@ public class Audio implements Comparable<Audio>, Parcelable {
     }
 
     public int getDuration() { return this.length; }
+    public int getId() { return this.id; }
 
     @Override
     public String toString() {
-        return this.tracknum + " " + this.title + " " + this.album + " " + this.artist;
+        return this.id + " " + this.tracknum + " " + this.title + " " + this.album + " " + this.artist;
     }
 
     @Override
@@ -82,6 +85,8 @@ public class Audio implements Comparable<Audio>, Parcelable {
         parcel.writeString(this.album);
         parcel.writeString(this.artist);
         parcel.writeInt(this.length);
+        parcel.writeInt(this.id);
+
     }
 
     public static final Parcelable.Creator<Audio> CREATOR = new Parcelable.Creator<Audio>() {

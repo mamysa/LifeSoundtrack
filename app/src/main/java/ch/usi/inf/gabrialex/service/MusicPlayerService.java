@@ -220,7 +220,7 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
         String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
         Cursor cursor = resolver.query(uri, null, selection, null, sortOrder);
         Log.d("getMusicListing()", "getting music");
-        Cursor oldMusic;
+        Cursor oldId;
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -232,17 +232,17 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
                 String d = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
                 String e = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
                 String f = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-                Audio audio = new Audio(a,b,c,d,e, Integer.parseInt(f));
-                audioList.add(audio);
+
 
                 // TODO @refactor maybe goes on its own method?
                 /*
                 If the music file is not found in the DB, then add it
                  */
-                oldMusic = helper.getReadableDatabase().rawQuery("SELECT count(*) FROM Tracks WHERE data ='"+a+"'", null );
-                oldMusic.moveToFirst();
+                oldId = helper.getReadableDatabase().rawQuery("SELECT _id FROM Tracks WHERE data ='"+a+"'", null );
+                oldId.moveToFirst();
+                int id;
                 //File not found in the DB-> add the file
-                if (oldMusic.getString(0).equals("0")){
+                if (oldId.getCount() == 0){
                     ContentValues values = new ContentValues();
                     values.put("data", a);
                     values.put("track", b);
@@ -251,14 +251,20 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
                     values.put("artist", e);
                     values.put("duration", f);
                     helper.getWritableDatabase().insert("Tracks", null, values);
+                    Cursor newId;
+                    newId = helper.getReadableDatabase().rawQuery("SELECT _id FROM Tracks WHERE data ='"+a+"'", null );
+                    newId.moveToFirst();
+                    id = Integer.parseInt(newId.getString(0));
+                    Audio audio = new Audio(a,b,c,d,e, Integer.parseInt(f), id);
+                    audioList.add(audio);
                 }
                 else {//File already in the DB-> do nothing
                     Log.d("getMusicListing()", "cannot add  "+ a);
-
+                    id = Integer.parseInt(oldId.getString(0));
+                    Audio audio = new Audio(a,b,c,d,e, Integer.parseInt(f), id);
+                    audioList.add(audio);
                 }
-
-
-                // try to insert this into DB
+                
                 cursor.moveToNext();
             }
             cursor.close();
