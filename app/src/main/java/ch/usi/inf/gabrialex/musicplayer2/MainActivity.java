@@ -47,8 +47,6 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
 
     private LocalBroadcastManager broadcastManager;
     private ArrayList<Audio> playlist;
-    private ViewPager viewPager;
-    private PagerAdapter pagerAdapter;
 
 
     private PlayerControlFragment playerControlFragment;
@@ -72,19 +70,13 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         this.eventHandlers.put(Protocol.PLAYER_PLAYBACK_POSITION_UPDATE, this.PlaybackPositionUpdated);
         this.eventHandlers.put(Protocol.PLAYER_STATE_CHANGE, this.PlayerStateChanged);
 
-        ArrayList<Fragment> fragments = new ArrayList<>();
+
         this.playlistFragment = new PlaylistFragment();
         this.playlistFragment.setEventListener(this);
-        fragments.add(this.playlistFragment);
 
         this.playerControlFragment = new PlayerControlFragment();
         this.playerControlFragment.setEventListener(this);
-        fragments.add(this.playerControlFragment);
 
-        /*this.viewPager = (ViewPager) findViewById(R.id.fragment_container_pager);
-        this.pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
-        this.viewPager.setAdapter(this.pagerAdapter);
-*/
         FragmentTransaction transaction =
                 getSupportFragmentManager().beginTransaction();
 
@@ -323,31 +315,5 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-    // TODO remove this and use player fragment together with playlist fragment
-    /**
-     * Adapter for PageView.
-     */
-    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
-        ArrayList<Fragment> fragments;
-
-        public ScreenSlidePagerAdapter(FragmentManager fm, ArrayList<Fragment> fragments) {
-            super(fm);
-            this.fragments = fragments;
-        }
-
-        @Override
-        public int getCount() {
-            return this.fragments.size();
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            position = Math.min(this.fragments.size()-1, position);
-            position = Math.max(0, position);
-            return this.fragments.get(position);
-        }
     }
 }
