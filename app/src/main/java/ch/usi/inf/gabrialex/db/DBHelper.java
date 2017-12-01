@@ -36,11 +36,12 @@ public class DBHelper extends SQLiteOpenHelper {
                         "%s TEXT, " +
                         "%s TEXT, " +
                         "%s TEXT, " +
-                        "%s TEXT)",
+                        "%s TEXT, " +
+                        "%s INTEGER)",
             DBTableAudio.TABLE_NAME, DBTableAudio.ID,
             DBTableAudio.DATA, DBTableAudio.TRACK,
             DBTableAudio.TITLE, DBTableAudio.ALBUM,
-            DBTableAudio.ARTIST, DBTableAudio.DURATION);
+            DBTableAudio.ARTIST, DBTableAudio.DURATION, DBTableAudio.LIFETIME);
         sqLiteDatabase.execSQL(createTracksTable);
     }
 

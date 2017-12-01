@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 
 import ch.usi.inf.gabrialex.datastructures.Playlist;
 import ch.usi.inf.gabrialex.db.DBHelper;
+import ch.usi.inf.gabrialex.db.DBTableAudio;
 import ch.usi.inf.gabrialex.protocol.MediaPlayerState;
 import ch.usi.inf.gabrialex.protocol.Protocol;
 
@@ -222,6 +224,23 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
         Log.d("getMusicListing()", "getting music");
         Cursor oldId;
 
+
+        long libraryVersion = 0;
+        // first we need to fetch previous update number. Our current update number will be
+        // prev_update_num + 1. All tracks that are still present in the media store will have
+        // their lifetime incremented. Entries that did not have their lifetime updated will be purged!
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor lifetimeCursor = db.rawQuery("SELECT " + DBTableAudio.LIFETIME + " FROM " + DBTableAudio.TABLE_NAME, null);
+        if (lifetimeCursor != null) {
+            if (lifetimeCursor.getCount() != 0) {
+                System.out.println("wat");
+                lifetimeCursor.moveToFirst();
+                libraryVersion = lifetimeCursor.getLong(lifetimeCursor.getColumnIndex(DBTableAudio.LIFETIME)) + 1;
+            }
+
+            lifetimeCursor.close();
+        }
+
         if (cursor != null) {
             cursor.moveToFirst();
 
@@ -250,6 +269,7 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
                     values.put("album", d);
                     values.put("artist", e);
                     values.put("duration", f);
+                    values.put(DBTableAudio.LIFETIME, libraryVersion);
                     helper.getWritableDatabase().insert("Tracks", null, values);
                     Cursor newId;
                     newId = helper.getReadableDatabase().rawQuery("SELECT _id FROM Tracks WHERE data =?", new String[]{ a });
@@ -257,18 +277,28 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
                     id = Integer.parseInt(newId.getString(0));
                     Audio audio = new Audio(a,b,c,d,e, Integer.parseInt(f), id);
                     audioList.add(audio);
+                    System.out.println(audio);
                 }
                 else {//File already in the DB-> do nothing
                     Log.d("getMusicListing()", "cannot add  "+ a);
                     id = Integer.parseInt(oldId.getString(0));
                     Audio audio = new Audio(a,b,c,d,e, Integer.parseInt(f), id);
                     audioList.add(audio);
+                    helper.getWritableDatabase()
+                          .execSQL("UPDATE " + DBTableAudio.TABLE_NAME + " SET "
+                                              + DBTableAudio.LIFETIME + "=? WHERE "
+                                              + DBTableAudio.DATA + "=?;", new String[]{ ""+libraryVersion, a });
                 }
                 
                 cursor.moveToNext();
             }
             cursor.close();
         }
+
+        // remove all old entries.
+        helper.getWritableDatabase()
+              .execSQL("DELETE FROM " + DBTableAudio.TABLE_NAME + " WHERE "
+                                      + DBTableAudio.LIFETIME + "<?;", new String[] { ""+libraryVersion });
 
         synchronized (Playlist.class) {
             Playlist playlist = Playlist.getInstance();
