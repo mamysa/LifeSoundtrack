@@ -26,3 +26,28 @@
 	-> When song finishes playing 
 		-> (song_id, gps, user_mood, time, day_of_the_week, weather(temperature?), activity)
 		
+Context Table 
+Song-Id, Listening-duration, Longtitude/Latitute Mood(Happy,Neutral,SAD!) , Day, SongStartingListenTime, (Running / Walking / Driving / Working == activities == acceleration based?)
+
+
+date -> Day (Monday, Tuesday..., etc == binary vector?)
+date -> hh:mm:ss ( smoothing factor? )
+Weather -> temperature, precipation(raining/snowing/sunny == binary vector?) (external API??)
+
+
+Ranking 
+=======
+currentContext = ...
+sql(select * FROM Song)
+for each song {
+	sql (select song From Context) (id - location - mood)  {
+		rank  = similarity(sql.context.location, currentContext.location)
+		rank += similarity(sql.context.mood, currentContext.mood)
+		rank = rank * (listening_duration / song_total_duration)
+	}
+}
+
+(time1 - time2) (time3 - time4) -- two different entries for now , separate based on threshold?
+
+Alex: Lon/Lat ranking
+Gabri: Mood(splash) activity 
