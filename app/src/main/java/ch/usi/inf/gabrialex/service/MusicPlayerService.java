@@ -238,7 +238,7 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
                 /*
                 If the music file is not found in the DB, then add it
                  */
-                oldId = helper.getReadableDatabase().rawQuery("SELECT _id FROM Tracks WHERE data ='"+a+"'", null );
+                oldId = helper.getReadableDatabase().rawQuery("SELECT _id FROM Tracks WHERE data=?", new String[]{ a });
                 oldId.moveToFirst();
                 int id;
                 //File not found in the DB-> add the file
@@ -252,7 +252,7 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
                     values.put("duration", f);
                     helper.getWritableDatabase().insert("Tracks", null, values);
                     Cursor newId;
-                    newId = helper.getReadableDatabase().rawQuery("SELECT _id FROM Tracks WHERE data ='"+a+"'", null );
+                    newId = helper.getReadableDatabase().rawQuery("SELECT _id FROM Tracks WHERE data =?", new String[]{ a });
                     newId.moveToFirst();
                     id = Integer.parseInt(newId.getString(0));
                     Audio audio = new Audio(a,b,c,d,e, Integer.parseInt(f), id);
