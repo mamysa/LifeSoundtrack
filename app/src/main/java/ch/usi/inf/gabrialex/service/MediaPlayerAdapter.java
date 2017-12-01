@@ -41,8 +41,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                PlaybackPositionUpdateTask t = new PlaybackPositionUpdateTask();
-                t.execute();
+                updateTimestamp();
             }
         };
 
@@ -265,16 +264,11 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         this.playNext();
     }
 
-    private class PlaybackPositionUpdateTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            if (currentState == MediaPlayerState.PLAYING) {
-                int position = mediaPlayer.getCurrentPosition();
-                int duration = activeMedia.getDuration();
-                eventListener.onPlaybackPositionChanged(position, duration);
-            }
-            return null;
+    private void updateTimestamp() {
+        if (currentState == MediaPlayerState.PLAYING) {
+            int position = mediaPlayer.getCurrentPosition();
+            int duration = activeMedia.getDuration();
+            eventListener.onPlaybackPositionChanged(position, duration);
         }
     }
 }
