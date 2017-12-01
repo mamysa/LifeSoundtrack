@@ -6,14 +6,14 @@
     android:layout_gravity="top"
     android:orientation="vertical">
 
-    <include
-        android:id="@+id/playlist"
-        layout="@layout/fragment_playlist" />
+    <FrameLayout android:id="@+id/playlist"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-    <include
-        android:id="@+id/controll"
-        layout="@layout/fragment_playercontrol"
-
-        />
+    <FrameLayout android:id="@+id/controll"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        System.out.println("MAINACTIVITY_ONCREATE");
 
         // setup event handlers.
         this.eventHandlers = new HashMap<>();
@@ -71,19 +72,38 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         this.eventHandlers.put(Protocol.PLAYER_STATE_CHANGE, this.PlayerStateChanged);
 
 
-        this.playlistFragment = new PlaylistFragment();
-        this.playlistFragment.setEventListener(this);
+        if (savedInstanceState == null) {
+            this.playlistFragment = new PlaylistFragment();
+            this.playlistFragment.setEventListener(this);
 
-        this.playerControlFragment = new PlayerControlFragment();
-        this.playerControlFragment.setEventListener(this);
+            this.playerControlFragment = new PlayerControlFragment();
+            this.playerControlFragment.setEventListener(this);
 
+            FragmentManager fm = getSupportFragmentManager();
+
+            if (fm.findFragmentById(R.id.playlist) == null) {
+                FragmentTransaction transaction = fm.beginTransaction();
+                transaction.add(R.id.playlist, this.playlistFragment);
+                transaction.commitNow();
+            }
+
+            if (fm.findFragmentById(R.id.controll) == null) {
+                FragmentTransaction transaction = fm.beginTransaction();
+                transaction.add(R.id.controll, this.playerControlFragment);
+                transaction.commitNow();
+            }
+        }
+
+
+
+        /*
         FragmentTransaction transaction =
                 getSupportFragmentManager().beginTransaction();
 
         transaction.add(R.id.playlist, playlistFragment);
-        transaction.add(R.id.controll, playerControlFragment);
 
         transaction.commit();
+        */
 
 
         Intent intent = new Intent(this, MusicPlayerService.class);
