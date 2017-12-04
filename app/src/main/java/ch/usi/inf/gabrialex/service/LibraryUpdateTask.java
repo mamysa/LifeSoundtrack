@@ -33,7 +33,7 @@ public class LibraryUpdateTask implements Runnable {
      * this property.
      * (2) Iterate over media store.
      *  -> If file is not present in Tracks table, add it to table.
-     *  -> If file is present if Tracks table, update its library version to latest.
+     *  -> If file is present in Tracks table, update its library version to latest.
      * (3) Any file with older library version is no longer in MediaStore and they
      * should be deleted.
      */
