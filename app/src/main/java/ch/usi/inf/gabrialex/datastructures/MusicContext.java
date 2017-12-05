@@ -33,6 +33,7 @@ public class MusicContext {
     private Audio activeMedia;
     private ArrayList<Date> dates;
     private Location lastLocation;
+    private String mood;
 
     private MusicContext() {
         this.dates = new ArrayList<>();
@@ -58,5 +59,13 @@ public class MusicContext {
 
     public void timestamp() {
         this.dates.add(new Date());
+    }
+
+    public String getMood() {
+        return mood;
+    }
+
+    public void setMood(String mood) {
+        this.mood = mood;
     }
 }
