@@ -47,7 +47,7 @@ public class PlayerControlFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         final Button play = getView().findViewById(R.id.play_button);
-        play.setBackgroundResource(android.R.drawable.ic_media_play);
+        play.setBackgroundResource(R.drawable.ic_play);
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,7 +56,7 @@ public class PlayerControlFragment extends Fragment {
         });
 
         Button prev = getView().findViewById(R.id.previous_button);
-        prev.setBackgroundResource(android.R.drawable.ic_media_previous);
+        prev.setBackgroundResource(R.drawable.ic_previous);
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -67,7 +67,7 @@ public class PlayerControlFragment extends Fragment {
         });
 
         Button next = getView().findViewById(R.id.next_button);
-        next.setBackgroundResource(android.R.drawable.ic_media_next);
+        next.setBackgroundResource(R.drawable.ic_next);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,8 +118,8 @@ public class PlayerControlFragment extends Fragment {
      */
     public void updatePlayerState(MediaPlayerState state) {
         final Button play = getView().findViewById(R.id.play_button);
-        if (state == MediaPlayerState.PAUSED) play.setBackgroundResource(android.R.drawable.ic_media_play);
-        else play.setBackgroundResource(android.R.drawable.ic_media_pause);
+        if (state == MediaPlayerState.PAUSED) play.setBackgroundResource(R.drawable.ic_play);
+        else play.setBackgroundResource(R.drawable.ic_pause);
     }
 
     public void updatePlaybackPosition(int position, int duration) {
