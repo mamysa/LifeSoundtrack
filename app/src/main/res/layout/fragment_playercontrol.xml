@@ -16,12 +16,18 @@
         <TextView
             android:id="@+id/song_title_box"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="title placceholder"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/song_progress_box"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="progress placeholder"
+            android:textAlignment="center" />
 
         <SeekBar
             android:id="@+id/playback_seekbar"
@@ -33,23 +39,27 @@
             android:layout_height="wrap_content"
             android:baselineAligned="false"
             android:gravity="bottom|center_horizontal"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            style="?android:attr/buttonBarButtonStyle">
 
 
             <Button
                 android:id="@+id/previous_button"
                 android:layout_width="70dp"
-                android:layout_height="70dp" />
+                android:layout_height="70dp"
+                style="?android:attr/buttonBarButtonStyle"/>
 
             <Button
                 android:id="@+id/play_button"
                 android:layout_width="70dp"
-                android:layout_height="70dp" />
+                android:layout_height="70dp"
+                style="?android:attr/buttonBarButtonStyle"/>
 
             <Button
                 android:id="@+id/next_button"
                 android:layout_width="70dp"
-                android:layout_height="70dp" />
+                android:layout_height="70dp"
+                style="?android:attr/buttonBarButtonStyle"/>
 
         </LinearLayout>
 
