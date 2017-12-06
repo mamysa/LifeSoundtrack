@@ -59,9 +59,10 @@ public class PlaylistFragment extends Fragment {
     }
 
     public void update(ArrayList<Audio> playlist) {
-        ArrayAdapter<Audio> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, playlist);
+        SongAdapter m_adapter = new SongAdapter(getActivity(), R.layout.list_item, playlist);
+        /*ArrayAdapter<Audio> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, playlist);*/
         ListView view = getView().findViewById(R.id.playlist_view);
-        view.setAdapter(adapter);
+        view.setAdapter(m_adapter);
     }
 
     public void updateActiveEntry(Audio audio) {
