@@ -7,7 +7,8 @@ package ch.usi.inf.gabrialex.db;
 public class dbRankableEntry {
     public static final String TABLE_NAME = "RankableEntries";
     public static final String AUDIO_ID = "audioId";
-    public static final String DATE = "date";
+    public static final String DATE_FIRST_RESUME = "dateLirstResume";
+    public static final String DATE_LAST_PAUSE = "dateLastPause";
     public static final String DURATION_FRAC = "durationFrac";
     public static final String LOCATION_LON = "locationLon";
     public static final String LOCATION_LAT = "locationLat";
@@ -16,7 +17,8 @@ public class dbRankableEntry {
     static final String CREATE_TABLE_STMT = String.format(
         "CREATE TABLE IF NOT EXISTS %s(" +
         "%s INTEGER, " + // audio id
-        "%s TEXT, " + // date
+        "%s TEXT, " + // date 1st resume
+        "%s TEXT, " + // date last pause
         "%s REAL, " + // listening duration divided by track length, in seconds
         "%s REAL, " + // longitude
         "%s REAL, " + // latitude
@@ -24,7 +26,8 @@ public class dbRankableEntry {
         "FOREIGN KEY(%s) REFERENCES %s(%s));",  // AUDIO_ID;
         TABLE_NAME,
         AUDIO_ID,
-        DATE,
+        DATE_FIRST_RESUME,
+        DATE_LAST_PAUSE,
         DURATION_FRAC,
         LOCATION_LON,
         LOCATION_LAT,

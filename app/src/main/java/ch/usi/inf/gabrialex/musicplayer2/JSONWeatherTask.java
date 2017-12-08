@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import org.json.JSONException;
 
 import ch.usi.inf.gabrialex.datastructures.EnvironmentContext;
-import ch.usi.inf.gabrialex.datastructures.MusicContext;
 
 /**
  * Created by usi on 08.12.17.

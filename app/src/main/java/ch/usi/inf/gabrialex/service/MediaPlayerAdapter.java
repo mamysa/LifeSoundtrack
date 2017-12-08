@@ -1,17 +1,12 @@
 package ch.usi.inf.gabrialex.service;
 
-import android.media.AudioTrack;
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
-import android.util.Log;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import ch.usi.inf.gabrialex.datastructures.MusicContext;
+import ch.usi.inf.gabrialex.datastructures.MusicContextManager;
 import ch.usi.inf.gabrialex.datastructures.Playlist;
 import ch.usi.inf.gabrialex.protocol.MediaPlayerState;
 
@@ -70,7 +65,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             this.resume();
         }
 
-        MusicContext.getInstance().timestamp();
+        MusicContextManager.getInstance().timestamp();
         this.eventListener.onStateChanged(this.currentState);
         this.eventListener.onPlaybackPositionChanged(this.getPlaybackPosition(), this.activeMedia.getDuration());
     }
@@ -98,7 +93,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
     public void setTrack(Audio audio) {
         synchronized (Playlist.class) {
             Playlist instance = Playlist.getInstance();
-            MusicContext context = MusicContext.getInstance();
+            MusicContextManager context = MusicContextManager.getInstance();
 
             if (instance.playlistEmpty()) {
                 return;
@@ -141,7 +136,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
     public void playNext() {
         synchronized (Playlist.class) {
             Playlist instance = Playlist.getInstance();
-            MusicContext context = MusicContext.getInstance();
+            MusicContextManager context = MusicContextManager.getInstance();
 
             if (instance.playlistEmpty()) {
                 return;
@@ -189,7 +184,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
 
         synchronized (Playlist.class) {
             Playlist instance = Playlist.getInstance();
-            MusicContext context = MusicContext.getInstance();
+            MusicContextManager context = MusicContextManager.getInstance();
 
             if (instance.playlistEmpty()) {
                 return;
@@ -236,7 +231,7 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
 
         synchronized (Playlist.class) {
             Playlist instance = Playlist.getInstance();
-            MusicContext context = MusicContext.getInstance();
+            MusicContextManager context = MusicContextManager.getInstance();
 
             if (instance.playlistEmpty()) {
                 return;

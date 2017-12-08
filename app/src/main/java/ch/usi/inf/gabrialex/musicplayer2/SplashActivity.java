@@ -6,11 +6,9 @@ import android.content.pm.PackageManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import ch.usi.inf.gabrialex.datastructures.EnvironmentContext;
-import ch.usi.inf.gabrialex.datastructures.MusicContext;
 
 public class SplashActivity extends AppCompatActivity {
 

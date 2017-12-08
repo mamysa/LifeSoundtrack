@@ -11,7 +11,6 @@ import android.os.IBinder;
 import android.util.Log;
 
 import ch.usi.inf.gabrialex.datastructures.EnvironmentContext;
-import ch.usi.inf.gabrialex.datastructures.MusicContext;
 import ch.usi.inf.gabrialex.musicplayer2.JSONWeatherTask;
 
 public class LocationService extends Service {
