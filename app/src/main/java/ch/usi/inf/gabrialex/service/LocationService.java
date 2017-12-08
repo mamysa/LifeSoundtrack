@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import ch.usi.inf.gabrialex.datastructures.EnvironmentContext;
 import ch.usi.inf.gabrialex.datastructures.MusicContext;
 import ch.usi.inf.gabrialex.musicplayer2.JSONWeatherTask;
 
@@ -19,7 +20,7 @@ public class LocationService extends Service {
         private static final int LOCATION_INTERVAL = 1000;
         private static final float LOCATION_DISTANCE = 10f;
         private Binder binder = new LocationService.LocationServiceBinder();
-        private MusicContext musicContext = MusicContext.getInstance();
+        private EnvironmentContext envContext = EnvironmentContext.getInstance();
         private class LocationListener implements android.location.LocationListener
         {
             Location mLastLocation;
@@ -35,7 +36,7 @@ public class LocationService extends Service {
             {
                 Log.e(TAG, "onLocationChanged: " + location);
                 mLastLocation.set(location);
-                musicContext.setLastLocation(location);
+                envContext.setLastLocation(location);
                 JSONWeatherTask task = new JSONWeatherTask();
                 task.execute(new String[]{String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude())});
             }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import ch.usi.inf.gabrialex.datastructures.EnvironmentContext;
 import ch.usi.inf.gabrialex.datastructures.MusicContext;
 
 public class SplashActivity extends AppCompatActivity {
@@ -28,7 +29,7 @@ public class SplashActivity extends AppCompatActivity {
         goodMood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MusicContext.getInstance().setMood("good");
+                EnvironmentContext.getInstance().setMood("good");
                 Intent mainIntent = new Intent(SplashActivity.this,MainActivity.class);
                 SplashActivity.this.startActivity(mainIntent);
                 SplashActivity.this.finish();
@@ -38,7 +39,7 @@ public class SplashActivity extends AppCompatActivity {
         neutralMood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MusicContext.getInstance().setMood("neutral");
+                EnvironmentContext.getInstance().setMood("neutral");
                 Intent mainIntent = new Intent(SplashActivity.this,MainActivity.class);
                 SplashActivity.this.startActivity(mainIntent);
                 SplashActivity.this.finish();
@@ -48,7 +49,7 @@ public class SplashActivity extends AppCompatActivity {
         badMood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MusicContext.getInstance().setMood("bad");
+                EnvironmentContext.getInstance().setMood("bad");
                 Intent mainIntent = new Intent(SplashActivity.this,MainActivity.class);
                 SplashActivity.this.startActivity(mainIntent);
                 SplashActivity.this.finish();

@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 
 import org.json.JSONException;
 
+import ch.usi.inf.gabrialex.datastructures.EnvironmentContext;
 import ch.usi.inf.gabrialex.datastructures.MusicContext;
 
 /**
@@ -32,9 +33,7 @@ public class JSONWeatherTask extends AsyncTask<String, Void, Weather> {
     @Override
     protected void onPostExecute(Weather weather) {
         super.onPostExecute(weather);
-        MusicContext.getInstance().setWeather(weather.currentCondition.getCondition());
-
-
+        EnvironmentContext.getInstance().setWeather(weather.currentCondition.getCondition());
     }
 
 }
