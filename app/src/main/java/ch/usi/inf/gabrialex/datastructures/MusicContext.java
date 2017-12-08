@@ -5,6 +5,7 @@ package ch.usi.inf.gabrialex.datastructures;
  */
 
 import android.location.Location;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +35,7 @@ public class MusicContext {
     private ArrayList<Date> dates;
     private Location lastLocation;
     private String mood;
+    private String weather;
 
     private MusicContext() {
         this.dates = new ArrayList<>();
@@ -67,5 +69,10 @@ public class MusicContext {
 
     public void setMood(String mood) {
         this.mood = mood;
+    }
+
+    public void setWeather(String weather) {
+        this.weather = weather;
+        Log.d("WEATHER UP", "OK = " + weather);
     }
 }

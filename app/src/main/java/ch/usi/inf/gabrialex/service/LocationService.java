@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import ch.usi.inf.gabrialex.datastructures.MusicContext;
+import ch.usi.inf.gabrialex.musicplayer2.JSONWeatherTask;
 
 public class LocationService extends Service {
         private static final String TAG = "LOCATION";
@@ -35,6 +36,8 @@ public class LocationService extends Service {
                 Log.e(TAG, "onLocationChanged: " + location);
                 mLastLocation.set(location);
                 musicContext.setLastLocation(location);
+                JSONWeatherTask task = new JSONWeatherTask();
+                task.execute(new String[]{String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude())});
             }
 
 

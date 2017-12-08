@@ -15,7 +15,7 @@ public class JSONWeatherTask extends AsyncTask<String, Void, Weather> {
     @Override
     protected Weather doInBackground(String... params) {
         Weather weather = new Weather();
-        String data = ((new WeatherHttpClient()).getWeatherData(params[0]));
+        String data = ((new WeatherHttpClient()).getWeatherData(params[0], params[1]));
 
         try {
             weather = JSONWeatherParser.getWeather(data);
@@ -32,7 +32,7 @@ public class JSONWeatherTask extends AsyncTask<String, Void, Weather> {
     @Override
     protected void onPostExecute(Weather weather) {
         super.onPostExecute(weather);
-        MusicContext.getInstance().setWeather(weather);
+        MusicContext.getInstance().setWeather(weather.currentCondition.getCondition());
 
 
     }
