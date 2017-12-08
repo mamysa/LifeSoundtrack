@@ -43,6 +43,10 @@ public class DBHelper extends SQLiteOpenHelper {
             DBTableAudio.TITLE, DBTableAudio.ALBUM,
             DBTableAudio.ARTIST, DBTableAudio.DURATION, DBTableAudio.LIFETIME);
         sqLiteDatabase.execSQL(createTracksTable);
+
+        System.out.println(dbRankableEntry.CREATE_TABLE_STMT);
+
+        sqLiteDatabase.execSQL(dbRankableEntry.CREATE_TABLE_STMT);
     }
 
     @Override

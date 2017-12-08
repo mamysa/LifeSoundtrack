@@ -2,6 +2,10 @@ package ch.usi.inf.gabrialex.datastructures;
 
 import android.location.Location;
 
+import org.joda.time.DateTime;
+
+import java.util.Date;
+
 /**
  * Created by alex on 08.12.17.
  */
@@ -12,6 +16,14 @@ import android.location.Location;
 public class EnvironmentContext {
 
     private static EnvironmentContext instance;
+
+    public static Location LOCATION_DEFAULT_VALUE = new Location("");
+    public static DateTime DATETIME_DEFAULT_VALUE = new DateTime(new Date());
+
+    static {
+        LOCATION_DEFAULT_VALUE.setLongitude(Double.NaN);
+        LOCATION_DEFAULT_VALUE.setLatitude(Double.NaN);
+    }
 
     /**
      * Get music context instance.
@@ -27,7 +39,10 @@ public class EnvironmentContext {
     private Location lastLocation;
     private String mood;
     private String weather;
-    private Object lock;
+
+    private EnvironmentContext() {
+        this.lastLocation = LOCATION_DEFAULT_VALUE;
+    }
 
     public Location getLastLocation() {
         return lastLocation;

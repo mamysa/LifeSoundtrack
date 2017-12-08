@@ -6,11 +6,20 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.method.DateTimeKeyListener;
+import android.util.Log;
 
+import org.joda.time.DateTime;
+
+import java.util.ArrayList;
+
+import ch.usi.inf.gabrialex.datastructures.EnvironmentContext;
 import ch.usi.inf.gabrialex.db.DBHelper;
 import ch.usi.inf.gabrialex.db.DBTableAudio;
+import ch.usi.inf.gabrialex.db.dbRankableEntry;
 
 /**
  * Created by alex on 01.12.17.
@@ -36,6 +45,8 @@ public class LibraryUpdateTask implements Runnable {
      *  -> If file is present in Tracks table, update its library version to latest.
      * (3) Any file with older library version is no longer in MediaStore and they
      * should be deleted.
+     * (4) Newly added tracks should have an entry added to dbRankableEntry to be able to
+     * compute initial rankings.
      */
     @Override
     public void run() {
@@ -49,20 +60,29 @@ public class LibraryUpdateTask implements Runnable {
         Cursor cursor = this.contentResolver.query(uri, null, selection, null, sortOrder);
 
 
-        long tracksAdded = 0;
+        ArrayList<String> tracksAdded = new ArrayList<>();
         if (cursor != null) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 ContentValues values = this.convertMediaStoreCursor(cursor, libraryVersion);
                 if (this.addOrUpdateEntry(values, libraryVersion))  {
-                    tracksAdded++;
+                    tracksAdded.add((String)values.get(DBTableAudio.DATA));
                 }
                 cursor.moveToNext();
             }
             cursor.close();
-            long tracksRemoved = this.deleteOldEntries(libraryVersion);
+
+            for (String track: tracksAdded) {
+                addRankedEntries(track);
+            }
+
+            deleteOldEntries(libraryVersion);
         }
 
+        Log.e("Ok", "LibraryUpdateTask done!");
+
+        long tracksRemovedQty = this.deleteOldEntries(libraryVersion);
+        long trackSAddedQty = tracksAdded.size();
         // TODO call service.onLibraryUpdateComplete(tracksAdded, tracksRemoved) should unblock UI.
     }
 
@@ -128,6 +148,41 @@ public class LibraryUpdateTask implements Runnable {
               .execSQL("DELETE FROM " + DBTableAudio.TABLE_NAME + " WHERE "
                                       + DBTableAudio.LIFETIME + "<?;", new String[] { ""+libraryVersion });
         return DatabaseUtils.longForQuery(helper.getWritableDatabase(), "SELECT changes()", null);
+    }
+
+    /**
+     * For each newly inserted track, add entry to RankableEntry table with random bias and
+     * default values.
+     */
+    private void addRankedEntries(String trackData) {
+        DBHelper helper = DBHelper.getInstance(this.context);
+        Cursor cursor = helper.getReadableDatabase().rawQuery(
+                "SELECT " + DBTableAudio.ID
+              + " FROM "  + DBTableAudio.TABLE_NAME
+              + " WHERE " + DBTableAudio.DATA+"=?;", new String[]{ trackData });
+        if (cursor != null) {
+            cursor.moveToFirst();
+
+            Location  location = EnvironmentContext.LOCATION_DEFAULT_VALUE;
+            String dateTimeStr = EnvironmentContext.DATETIME_DEFAULT_VALUE.toString();
+
+            while (!cursor.isAfterLast()) {
+                long trackID = cursor.getLong(cursor.getColumnIndex(DBTableAudio.ID));
+
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(dbRankableEntry.AUDIO_ID, trackID);
+                contentValues.put(dbRankableEntry.DATE, dateTimeStr);
+                contentValues.put(dbRankableEntry.DURATION_FRAC, 0);
+                contentValues.put(dbRankableEntry.LOCATION_LON, location.getLongitude());
+                contentValues.put(dbRankableEntry.LOCATION_LAT, location.getLatitude());
+                contentValues.put(dbRankableEntry.BIAS, Math.random());
+                helper.getWritableDatabase().insert(dbRankableEntry.TABLE_NAME, null, contentValues);
+
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+        }
     }
 
     /**
