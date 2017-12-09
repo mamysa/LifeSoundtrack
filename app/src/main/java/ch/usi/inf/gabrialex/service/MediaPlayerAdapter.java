@@ -254,6 +254,11 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         return this.mediaPlayer.getCurrentPosition();
     }
 
+    public void reportTrack() {
+        this.eventListener.onTrackSelected(this.activeMedia);
+    }
+
+
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         this.playNext();

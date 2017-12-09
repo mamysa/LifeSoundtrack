@@ -12,4 +12,5 @@ public interface PlayerControlEventListener {
     void onNextButtonPressed();
     void onSeekBarChanged(int param);
     void onTrackSelected(Audio param);
+    void onUpdateCurrentTrack();
 }

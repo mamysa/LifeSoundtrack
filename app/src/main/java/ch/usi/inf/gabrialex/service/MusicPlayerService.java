@@ -67,6 +67,7 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
         this.requestHandlers.put(Protocol.PLAYER_PREV, this.PreviousTrack);
         this.requestHandlers.put(Protocol.PLAYER_SET_POSITION, this.SetPlaybackPosition);
         this.requestHandlers.put(Protocol.PLAYER_SETTRACK, this.SetTrack);
+        this.requestHandlers.put(Protocol.PLAYER_GET_CURRENT_TRACK, this.GetCurrentTrack);
 
         // initialize broadcast manager
         IntentFilter inf = new IntentFilter();
@@ -157,6 +158,16 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
         public void handleEvent(Intent requestIntent) {
             Audio audio = requestIntent.getParcelableExtra(Protocol.PLAYER_SETTRACK);
             mediaPlayer.setTrack(audio);
+        }
+    };
+
+    /**
+     * Triggers when main activity is back to life and wants to update currently playing track.
+     */
+    private final EventHandler GetCurrentTrack  = new EventHandler() {
+        @Override
+        public void handleEvent(Intent intent) {
+            mediaPlayer.reportTrack();
         }
     };
 

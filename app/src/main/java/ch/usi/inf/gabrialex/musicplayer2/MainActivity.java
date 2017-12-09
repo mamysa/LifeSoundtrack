@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         }
         this.broadcastManager.registerReceiver(this.broadcastReceiver, inf);
         onRequestPlaylistListing();
+        onUpdateCurrentTrack();
     }
 
     /**
@@ -222,6 +223,16 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         this.broadcastManager.sendBroadcast(intent);
     }
 
+    /**
+     * Fires up when Activity comes back to life and wants to update currently playing track.
+     */
+    @Override
+    public void onUpdateCurrentTrack() {
+        Intent intent = new Intent();
+        intent.setAction(Protocol.PLAYER_GET_CURRENT_TRACK);
+        this.broadcastManager.sendBroadcast(intent);
+    }
+
     //============================================================
     // Various responses activity needs to get
     //============================================================
@@ -249,7 +260,6 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         public void handleEvent(Intent intent) {
             Audio audio = intent.getParcelableExtra(Protocol.PLAYER_NEWTRACK_SELECTED);
             playerControlFragment.updateView(audio);
-
         }
     };
 
