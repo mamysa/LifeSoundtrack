@@ -5,8 +5,10 @@ import android.location.Location;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import ch.usi.inf.gabrialex.service.Audio;
+import ch.usi.inf.gabrialex.service.EventHandler;
 
 /**
  * Created by alex on 08.12.17.
@@ -72,5 +74,27 @@ public class MusicContext {
 
     public boolean hasData() {
         return this.containsData;
+    }
+
+    public boolean hasAudio() {
+        return this.activeMedia != null;
+    }
+
+    /**
+     * If user skips the track by spamming previous/next button while being paused, that will result
+     * in data being empty. We initialize it here with current location/datetime, etc, so that we can
+     * use it for ranking.
+     */
+    public void initializeWithEnvironment() {
+        DateTime dateTime = new DateTime(new Date());
+        this.dates.add(dateTime);
+        this.dates.add(dateTime);
+
+        EnvironmentContext env =  EnvironmentContext.getInstance();
+        synchronized (EnvironmentContext.class) {
+            Location location = env.getLastLocation();
+            this.locations.add(location);
+            this.locations.add(location);
+        }
     }
 }

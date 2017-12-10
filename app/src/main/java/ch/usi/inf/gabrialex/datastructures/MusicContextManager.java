@@ -37,7 +37,10 @@ public class MusicContextManager {
 
 
     public void trackChanged(Audio audio) {
-        if (this.musicContext != null && this.musicContext.hasData()) {
+        if (this.musicContext != null && this.musicContext.hasAudio()) {
+            if (!this.musicContext.hasData()) {
+                this.musicContext.initializeWithEnvironment();
+            }
             InsertRankableEntryTask task = new InsertRankableEntryTask(this.musicContext);
             Thread t = new Thread(task);
             t.run();
