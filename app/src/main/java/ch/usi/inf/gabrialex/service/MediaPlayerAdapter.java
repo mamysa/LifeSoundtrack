@@ -193,6 +193,13 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
             Audio audio = instance.getPrevious(this.activeMedia);
             if (audio == null || this.mediaPlayer.getCurrentPosition() > skipThresholdMs) {
                 this.mediaPlayer.seekTo(0);
+                if ( this.currentState == MediaPlayerState.PLAYING) {
+                    context.timestamp();
+                }
+                context.trackChanged(this.activeMedia);
+                if ( this.currentState == MediaPlayerState.PLAYING) {
+                    context.timestamp();
+                }
             }
             else {
                 if (this.currentState == MediaPlayerState.PLAYING) {
