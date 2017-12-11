@@ -100,7 +100,7 @@ public class InsertRankableEntryTask implements Runnable {
         DateTime s = this.musicContext.getStartTimestamp();
         DateTime e = this.musicContext.getEndTimestamp();
         Period diff = new Period(s,e);
-        if (diff.toStandardSeconds().getSeconds() == 0 || diff.toStandardHours().getHours() >= rankingCutoffThreshold) {
+        if (diff.toStandardSeconds().getSeconds() == 0 || Math.abs(diff.toStandardHours().getHours()) >= rankingCutoffThreshold) {
             return 0.0d;
         }
         // maybe non-linear function here?
