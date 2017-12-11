@@ -23,6 +23,11 @@ public class MusicContext {
     private ArrayList<String> weatherConditions;
     private boolean containsData;
 
+    // indicates time when player receives onTrackChange events when switching to activeMedia and
+    // switching from active media.
+    private DateTime startTimestamp;
+    private DateTime endTimestamp;
+
     public MusicContext() {
         this.dates = new ArrayList<>();
         this.moods = new ArrayList<>();
@@ -44,6 +49,22 @@ public class MusicContext {
     public void addDate(DateTime date) {
         this.dates.add(date);
         this.containsData = true;
+    }
+
+    public void setStartTimestamp(DateTime t){
+        this.startTimestamp = t;
+    }
+
+    public void setEndTimestamp(DateTime t){
+        this.endTimestamp = t;
+    }
+
+    public DateTime getStartTimestamp() {
+        return this.startTimestamp;
+    }
+
+    public DateTime getEndTimestamp() {
+        return this.endTimestamp;
     }
 
     public ArrayList<String> getMoods() {

@@ -174,6 +174,7 @@ public class LibraryUpdateTask implements Runnable {
                 contentValues.put(dbRankableEntry.DATE_FIRST_RESUME, dateTimeStr);
                 contentValues.put(dbRankableEntry.DATE_LAST_PAUSE, dateTimeStr);
                 contentValues.put(dbRankableEntry.DURATION_FRAC, 0);
+                contentValues.put(dbRankableEntry.REAL_DURATION_FRAC, 0);
                 contentValues.put(dbRankableEntry.LOCATION_LON, location.getLongitude());
                 contentValues.put(dbRankableEntry.LOCATION_LAT, location.getLatitude());
                 contentValues.put(dbRankableEntry.BIAS, Math.random());

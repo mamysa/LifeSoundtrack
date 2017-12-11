@@ -38,6 +38,7 @@ public class MusicContextManager {
 
     public void trackChanged(Audio audio) {
         if (this.musicContext != null && this.musicContext.hasAudio()) {
+            this.musicContext.setEndTimestamp(new DateTime(new Date()));
             if (!this.musicContext.hasData()) {
                 this.musicContext.initializeWithEnvironment();
             }
@@ -49,6 +50,7 @@ public class MusicContextManager {
         // reset context
         this.musicContext = new MusicContext();
         this.musicContext.setActiveMedia(audio);
+        this.musicContext.setStartTimestamp(new DateTime(new Date()));
     }
 
 
