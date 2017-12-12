@@ -70,9 +70,6 @@ public class PlaylistRankingTask implements Runnable{
     /**
      * For now we are going to disregard timezones and compare local times directly - in order to avoid
      * surprizes when moving across timezones...
-     * (1) if (end time - start time) < threshold -> return 0
-     * (2) otherwise, find out if current time is inside (start, end) interval -> return 1
-     * (3)
      * @param start time when user starts listening to the song
      * @param end time when user stops listening to the song.
      * @param now now
