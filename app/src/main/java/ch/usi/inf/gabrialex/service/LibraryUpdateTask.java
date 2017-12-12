@@ -20,6 +20,7 @@ import ch.usi.inf.gabrialex.datastructures.EnvironmentContext;
 import ch.usi.inf.gabrialex.db.DBHelper;
 import ch.usi.inf.gabrialex.db.DBTableAudio;
 import ch.usi.inf.gabrialex.db.dbRankableEntry;
+import ch.usi.inf.gabrialex.musicplayer2.LibraryUpdateEventListener;
 
 /**
  * Created by alex on 01.12.17.
@@ -28,10 +29,15 @@ import ch.usi.inf.gabrialex.db.dbRankableEntry;
 public class LibraryUpdateTask implements Runnable {
     private Context context;
     private ContentResolver contentResolver;
+    private LibraryUpdateEventListener eventListener;
 
     public LibraryUpdateTask(Context context, ContentResolver resolver) {
         this.context = context;
         this.contentResolver = resolver;
+    }
+
+    public void setEventListener(LibraryUpdateEventListener listener) {
+        this.eventListener = listener;
     }
 
     /**
@@ -83,7 +89,10 @@ public class LibraryUpdateTask implements Runnable {
 
         long tracksRemovedQty = this.deleteOldEntries(libraryVersion);
         long trackSAddedQty = tracksAdded.size();
-        // TODO call service.onLibraryUpdateComplete(tracksAdded, tracksRemoved) should unblock UI.
+
+        if (this.eventListener != null) {
+            this.eventListener.onLibraryUpdateComplete();
+        }
     }
 
     /**

@@ -39,25 +39,15 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
         super.onCreate();
         //this.getMusicListing();
 
-        LibraryUpdateTask libraryUpdateTask = new LibraryUpdateTask(this, this.getContentResolver());
-        Thread thread = new Thread(libraryUpdateTask);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException ex) {
-            // FIXME wat?
-        }
-
         // just for testing for now, will not do thread.join
         PlaylistRankingTask playlistRankingTask = new PlaylistRankingTask(this);
-        thread = new Thread(playlistRankingTask);
+        Thread thread = new Thread(playlistRankingTask);
         thread.start();
         try {
             thread.join();
         } catch (InterruptedException ex) {
             // FIXME wat?
         }
-
 
         // initialize request handlers
         this.requestHandlers = new HashMap<>();
