@@ -9,8 +9,9 @@ public class dbRankableEntry {
     public static final String AUDIO_ID = "audioId";
     public static final String DATE_FIRST_RESUME = "dateLirstResume";
     public static final String DATE_LAST_PAUSE = "dateLastPause";
-    public static final String DURATION_FRAC = "durationFrac";
-    public static final String REAL_DURATION_FRAC = "realDurationFrac";
+    public static final String DATE_PLAYER_SWITCH_TO = "datePlayerSwitchTo";
+    public static final String DATE_PLAYER_SWITCH_FROM = "datePlayerSwitchFrom";
+    public static final String LISTENING_DURATION = "listeningDuration";
     public static final String LOCATION_LON = "locationLon";
     public static final String LOCATION_LAT = "locationLat";
     public static final String BIAS = "bias";
@@ -20,8 +21,9 @@ public class dbRankableEntry {
         "%s INTEGER, " + // audio id
         "%s TEXT, " + // date 1st resume
         "%s TEXT, " + // date last pause
-        "%s REAL, " + // listening duration divided by track length, in seconds
-        "%s REAL, " + // listening duration divided by (DATE_LAST_PAUSE- DATE_FIRST_RESUME), in seconds
+        "%s TEXT, " + // date switch to
+        "%s TEXT, " + // date switch from
+        "%s REAL, " + // listening duration
         "%s REAL, " + // longitude
         "%s REAL, " + // latitude
         "%s REAL, " + // bias, used for to give some ranking to newly inserted tracks.
@@ -30,8 +32,9 @@ public class dbRankableEntry {
         AUDIO_ID,
         DATE_FIRST_RESUME,
         DATE_LAST_PAUSE,
-        DURATION_FRAC,
-        REAL_DURATION_FRAC,
+        DATE_PLAYER_SWITCH_TO,
+        DATE_PLAYER_SWITCH_FROM,
+        LISTENING_DURATION,
         LOCATION_LON,
         LOCATION_LAT,
         BIAS,

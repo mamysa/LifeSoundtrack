@@ -34,9 +34,7 @@ public class InsertRankableEntryTask implements Runnable {
         int trackID = this.musicContext.getActiveMedia().getId();
 
         double playtime = computePlaytime();
-        double durationRatio = computePlaytimeRatio(playtime);
-        double realDurationRatio = computeRealPlaytimeRatio(playtime);
-        System.out.println(durationRatio+ " "+realDurationRatio);
+        System.out.println(playtime);
 
         DateTime firstResumed = dates.get(0);
         DateTime lastPaused = dates.get(dates.size()-1);
@@ -45,8 +43,9 @@ public class InsertRankableEntryTask implements Runnable {
         contentValues.put(dbRankableEntry.AUDIO_ID, trackID);
         contentValues.put(dbRankableEntry.DATE_FIRST_RESUME, firstResumed.toString());
         contentValues.put(dbRankableEntry.DATE_LAST_PAUSE, lastPaused.toString());
-        contentValues.put(dbRankableEntry.DURATION_FRAC, durationRatio);
-        contentValues.put(dbRankableEntry.REAL_DURATION_FRAC, realDurationRatio);
+        contentValues.put(dbRankableEntry.DATE_PLAYER_SWITCH_TO, this.musicContext.getStartTimestamp().toString());
+        contentValues.put(dbRankableEntry.DATE_PLAYER_SWITCH_FROM, this.musicContext.getEndTimestamp().toString());
+        contentValues.put(dbRankableEntry.LISTENING_DURATION, playtime);
         contentValues.put(dbRankableEntry.LOCATION_LON, location.getLongitude());
         contentValues.put(dbRankableEntry.LOCATION_LAT, location.getLatitude());
         contentValues.put(dbRankableEntry.BIAS, 0);
@@ -75,36 +74,5 @@ public class InsertRankableEntryTask implements Runnable {
         }
 
         return timeListened;
-    }
-
-    /**
-     * Compute playtime / track_duration
-     * @param playtime
-     * @return
-     */
-    public double computePlaytimeRatio(double playtime) {
-        double duration = ((double)this.musicContext.getActiveMedia().getDuration() / 1000.0d); // to seconds
-        return playtime/duration;
-    }
-
-    /**
-     * Compute real listening ratio, i.e listening time / (end time - start time)
-     * @param playtime in seconds
-     * @return
-     */
-    public double computeRealPlaytimeRatio(double playtime) {
-        // if song has been on pause for longer than 6 hours, disable time ranking for it.
-        // fixme timezones?
-        final int rankingCutoffThreshold = 6;
-
-        DateTime s = this.musicContext.getStartTimestamp();
-        DateTime e = this.musicContext.getEndTimestamp();
-        Period diff = new Period(s,e);
-        if (diff.toStandardSeconds().getSeconds() == 0 || Math.abs(diff.toStandardHours().getHours()) >= rankingCutoffThreshold) {
-            return 0.0d;
-        }
-        // maybe non-linear function here?
-        System.out.println(diff.toStandardSeconds().getSeconds());
-        return playtime / (double)diff.toStandardSeconds().getSeconds();
     }
 }

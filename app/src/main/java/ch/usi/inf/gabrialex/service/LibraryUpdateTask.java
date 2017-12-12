@@ -173,8 +173,9 @@ public class LibraryUpdateTask implements Runnable {
                 contentValues.put(dbRankableEntry.AUDIO_ID, trackID);
                 contentValues.put(dbRankableEntry.DATE_FIRST_RESUME, dateTimeStr);
                 contentValues.put(dbRankableEntry.DATE_LAST_PAUSE, dateTimeStr);
-                contentValues.put(dbRankableEntry.DURATION_FRAC, 0);
-                contentValues.put(dbRankableEntry.REAL_DURATION_FRAC, 0);
+                contentValues.put(dbRankableEntry.DATE_PLAYER_SWITCH_TO, dateTimeStr);
+                contentValues.put(dbRankableEntry.DATE_PLAYER_SWITCH_FROM, dateTimeStr);
+                contentValues.put(dbRankableEntry.LISTENING_DURATION, 0);
                 contentValues.put(dbRankableEntry.LOCATION_LON, location.getLongitude());
                 contentValues.put(dbRankableEntry.LOCATION_LAT, location.getLatitude());
                 contentValues.put(dbRankableEntry.BIAS, Math.random());
