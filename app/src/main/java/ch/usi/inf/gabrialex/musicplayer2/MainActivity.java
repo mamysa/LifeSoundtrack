@@ -343,6 +343,10 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         }
+        if (id == R.id.trigger_debug_log_activity) {
+            Intent intent = new Intent(this, DisplayRankLogActivity.class);
+            startActivity(intent);
+        }
 
         return super.onOptionsItemSelected(item);
     }

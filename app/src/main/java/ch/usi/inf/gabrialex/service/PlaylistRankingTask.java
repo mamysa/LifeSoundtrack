@@ -3,10 +3,16 @@ package ch.usi.inf.gabrialex.service;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.IntegerRes;
+import android.util.Log;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 import org.joda.time.Period;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import ch.usi.inf.gabrialex.datastructures.EnvironmentContext;
 import ch.usi.inf.gabrialex.datastructures.Playlist;
@@ -22,6 +28,10 @@ public class PlaylistRankingTask implements Runnable{
 
     Context context;
 
+    final static public String LOG_FILE_NAME = "rankingDebugLog.txt";
+    private boolean LOG_TO_FILE = true; // FIXME all this file logging stuff must go somewhere else!
+    FileWriter logFileWriter = null;
+
     public PlaylistRankingTask(Context context) {
        this.context = context;
     }
@@ -29,6 +39,11 @@ public class PlaylistRankingTask implements Runnable{
 
     @Override
     public void run() {
+        if (this.LOG_TO_FILE) {
+            this.logFileWriter = this.openDebugLogFile();
+        }
+
+
         EnvironmentContext envContext = EnvironmentContext.copy();
         DBHelper helper = DBHelper.getInstance(this.context);
 
@@ -67,19 +82,31 @@ public class PlaylistRankingTask implements Runnable{
                         audio = new Audio(a,b,c,d,e,Integer.parseInt(f),(int)g);
 
                     }
-                    //TODO ranking here
-                    //FIXME fix duplicate audio entries!
+
                     rank += this.rank(cursor, envContext);
                     cursor.moveToNext();
                 }
                 cursor.close();
             }
         }
+
+        if (this.LOG_TO_FILE) {
+            this.closeDebugLogFile();
+        }
     }
 
     private double rank(Cursor cursor, EnvironmentContext environmentContext) {
         double entryRank = 0.0;
+
+
         String a = cursor.getString(cursor.getColumnIndex(DBTableAudio.DATA));
+
+        if (LOG_TO_FILE) {
+            String debugStr = String.format("Begin ranking row %s: \n", a);
+            this.appendtoDebugLogFile(debugStr);
+        }
+
+
         double playtimeRatio = this.computePlaytimeRatio(cursor);
         double realPlaytimeRatio = this.computeRealPlaytimeRatio(cursor);
 
@@ -90,11 +117,15 @@ public class PlaylistRankingTask implements Runnable{
         entryRank += bias;
 
         entryRank = playtimeRatio * entryRank;
+
+        if (LOG_TO_FILE) {
+            String debugStr = String.format("Final row rank: %s\n\n", entryRank);
+            this.appendtoDebugLogFile(debugStr);
+        }
         return entryRank;
     }
 
     final static int OUT_FRAME_HOUR = 1;
-    final boolean LOG_TO_FILE = false;
 
     /**
      * rankTime wrapper.
@@ -115,6 +146,9 @@ public class PlaylistRankingTask implements Runnable{
 
         if (LOG_TO_FILE) {
             //TODO
+            String debugStr = String.format("rankTime(): \n, start: %s, end: %s, current: %s, timeRank, %s\n",
+                    new LocalTime(firstResume), new LocalTime(lastPause), new LocalTime(currentDatetime), timeRank);
+            this.appendtoDebugLogFile(debugStr);
         }
         return timeRank;
     }
@@ -210,7 +244,15 @@ public class PlaylistRankingTask implements Runnable{
         String durationStr = cursor.getString(cursor.getColumnIndex(DBTableAudio.DURATION));
         double duration = (double)Integer.parseInt(durationStr) / 1000.0d;
         double playtime = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.LISTENING_DURATION));
-        return playtime/duration;
+
+        double ratio = playtime / duration;
+
+        if (LOG_TO_FILE) {
+            String debugStr = String.format("computePlaytimeRatio(): \n playtime=%s, duration=%s, ratio=%s\n",
+                    playtime, duration, ratio);
+            this.appendtoDebugLogFile(debugStr);
+        }
+        return ratio;
     }
 
     /**
@@ -223,17 +265,29 @@ public class PlaylistRankingTask implements Runnable{
         final int rankingCutoffThreshold = 6;
 
         double playtime = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.LISTENING_DURATION));
-        String switchFrom = cursor.getString(cursor.getColumnIndex(dbRankableEntry.DATE_PLAYER_SWITCH_TO));
-        String switchTo = cursor.getString(cursor.getColumnIndex(dbRankableEntry.DATE_PLAYER_SWITCH_FROM));
+        String switchTo = cursor.getString(cursor.getColumnIndex(dbRankableEntry.DATE_PLAYER_SWITCH_TO));
+        String switchFrom = cursor.getString(cursor.getColumnIndex(dbRankableEntry.DATE_PLAYER_SWITCH_FROM));
 
-        DateTime s = DateTime.parse(switchFrom);
-        DateTime e = DateTime.parse(switchTo);
+        DateTime s = DateTime.parse(switchTo);
+        DateTime e = DateTime.parse(switchFrom);
         Period diff = new Period(s,e);
         if (diff.toStandardSeconds().getSeconds() == 0 || Math.abs(diff.toStandardHours().getHours()) >= rankingCutoffThreshold) {
+            if (LOG_TO_FILE) {
+                String debugStr = String.format("computeRealPlaytimeRatio():\n switchTo=%s, switchFrom=%s, diff=%s, ratio=%s",
+                    switchTo, switchFrom, diff, 0.0);
+                this.appendtoDebugLogFile(debugStr);
+            }
             return 0.0d;
         }
+
+        double ratio = playtime / (double)diff.toStandardSeconds().getSeconds();
         // maybe non-linear function here?
-        return playtime / (double)diff.toStandardSeconds().getSeconds();
+        if (LOG_TO_FILE) {
+            String debugStr = String.format("computeRealPlaytimeRatio():\n switchTo=%s, switchFrom=%s, diff=%s, ratio=%s",
+                    switchTo, switchFrom, diff, ratio);
+            this.appendtoDebugLogFile(debugStr);
+        }
+        return ratio;
     }
 
     /**
@@ -246,5 +300,41 @@ public class PlaylistRankingTask implements Runnable{
         Period period = new Period(start, now);
         int days = period.toStandardDays().getDays();
         return (days == 0) ? 1.0 : 1.0/(double)days;
+    }
+
+
+    /**
+     * Helper method for opening log file. If opening log file fails, disable logging.
+     * @return
+     */
+    private FileWriter openDebugLogFile() {
+        File file = new File(context.getFilesDir(), LOG_FILE_NAME);
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(file, false);
+        } catch (IOException ex) {
+            this.LOG_TO_FILE = false;
+            Log.e("openDebugLogFile", "error opening logfile, disabling logging");
+        }
+
+        return fileWriter;
+    }
+
+    private void closeDebugLogFile() {
+        try {
+            logFileWriter.close();
+        }
+        catch (IOException ex) {
+            Log.e("closeDebugLogFile", "error closing logfile");
+        }
+    }
+
+    private void appendtoDebugLogFile(String s) {
+        try {
+            this.logFileWriter.append(s);
+        } catch (IOException ex) {
+            Log.e("appendToDebugLogFile", "error appending to logfile");
+        }
+
     }
 }

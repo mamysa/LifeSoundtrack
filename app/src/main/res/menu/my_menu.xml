@@ -6,5 +6,9 @@
         android:id="@+id/trigger_options_activity"
         android:title="Options"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/trigger_debug_log_activity"
+        android:title="Explain"
+        app:showAsAction="always" />
 
 </menu>
