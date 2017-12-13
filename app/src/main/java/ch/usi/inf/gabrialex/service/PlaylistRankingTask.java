@@ -43,6 +43,8 @@ public class PlaylistRankingTask implements Runnable{
 
             if (cursor != null) {
                 cursor.moveToFirst();
+
+                Audio audio = null;
                 while (!cursor.isAfterLast()) {
                     String a = cursor.getString(cursor.getColumnIndex(DBTableAudio.DATA));
                     String b = cursor.getString(cursor.getColumnIndex(DBTableAudio.TRACK));
@@ -52,22 +54,23 @@ public class PlaylistRankingTask implements Runnable{
                     String f = cursor.getString(cursor.getColumnIndex(DBTableAudio.DURATION));
                     long g = cursor.getLong(cursor.getColumnIndex(DBTableAudio.ID));
 
+                    if (audio == null || audio.getId() != g) {
+                        if (audio != null) {
+                            // set rank here
+                            playlist.addEntry(audio);
+                        }
+
+                        audio = new Audio(a,b,c,d,e,Integer.parseInt(f),(int)g);
+
+                    }
                     //TODO ranking here
                     //FIXME fix duplicate audio entries!
                     this.rank(cursor);
-                    Audio audio = new Audio(a,b,c,d,e,Integer.parseInt(f),(int)g);
-                    playlist.addEntry(audio);
                     cursor.moveToNext();
-
-
-                    // FIXME maybe cache the playlist in the db so that user is not presented with
-                    // empty view when application starts every time?
                 }
                 cursor.close();
             }
         }
-
-
     }
 
     private void rank(Cursor cursor) {

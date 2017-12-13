@@ -12,6 +12,7 @@ import java.util.Comparator;
 
 // @FIXME do we need this one at all? Maybe operate on ID's instead?
 public class Audio implements Comparable<Audio>, Parcelable {
+
     private String tracknum;
     private String data;
     private String title;
@@ -19,6 +20,8 @@ public class Audio implements Comparable<Audio>, Parcelable {
     private String artist;
     private int length;
     private int id;
+    private double rank;
+
     public Audio(String data, String tracknum, String title, String album, String artist, int length, int id) {
         this.tracknum = tracknum;
         this.data = data;
@@ -27,6 +30,7 @@ public class Audio implements Comparable<Audio>, Parcelable {
         this.artist = artist;
         this.length = length;
         this.id = id;
+        this.rank = 0;
     }
 
     public Audio(Parcel p) {
@@ -60,12 +64,22 @@ public class Audio implements Comparable<Audio>, Parcelable {
     }
 
     public int getDuration() { return this.length; }
+
     public int getId() { return this.id; }
+
+    public double getRank() {
+        return this.rank;
+    }
+
+    public void setRank(double rank) {
+        this.rank = rank;
+    }
 
     @Override
     public String toString() {
         return this.id + " " + this.tracknum + " " + this.title + " " + this.album + " " + this.artist;
     }
+
 
     @Override
     public int compareTo(@NonNull Audio audio) {
