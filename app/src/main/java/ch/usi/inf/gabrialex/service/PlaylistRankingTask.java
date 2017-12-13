@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 import org.joda.time.Period;
 
+import ch.usi.inf.gabrialex.datastructures.EnvironmentContext;
 import ch.usi.inf.gabrialex.datastructures.Playlist;
 import ch.usi.inf.gabrialex.db.DBHelper;
 import ch.usi.inf.gabrialex.db.DBTableAudio;
@@ -28,6 +29,7 @@ public class PlaylistRankingTask implements Runnable{
 
     @Override
     public void run() {
+        EnvironmentContext envContext = EnvironmentContext.copy();
         DBHelper helper = DBHelper.getInstance(this.context);
 
         String query = String.format(
@@ -45,6 +47,7 @@ public class PlaylistRankingTask implements Runnable{
                 cursor.moveToFirst();
 
                 Audio audio = null;
+                double rank = 0.0d;
                 while (!cursor.isAfterLast()) {
                     String a = cursor.getString(cursor.getColumnIndex(DBTableAudio.DATA));
                     String b = cursor.getString(cursor.getColumnIndex(DBTableAudio.TRACK));
@@ -58,6 +61,7 @@ public class PlaylistRankingTask implements Runnable{
                         if (audio != null) {
                             // set rank here
                             playlist.addEntry(audio);
+                            rank = 0.0d;
                         }
 
                         audio = new Audio(a,b,c,d,e,Integer.parseInt(f),(int)g);
@@ -65,7 +69,7 @@ public class PlaylistRankingTask implements Runnable{
                     }
                     //TODO ranking here
                     //FIXME fix duplicate audio entries!
-                    this.rank(cursor);
+                    rank += this.rank(cursor, envContext);
                     cursor.moveToNext();
                 }
                 cursor.close();
@@ -73,14 +77,47 @@ public class PlaylistRankingTask implements Runnable{
         }
     }
 
-    private void rank(Cursor cursor) {
+    private double rank(Cursor cursor, EnvironmentContext environmentContext) {
+        double entryRank = 0.0;
         String a = cursor.getString(cursor.getColumnIndex(DBTableAudio.DATA));
         double playtimeRatio = this.computePlaytimeRatio(cursor);
         double realPlaytimeRatio = this.computeRealPlaytimeRatio(cursor);
-        System.out.println(a + " " + playtimeRatio + " " + realPlaytimeRatio);
+
+        entryRank += realPlaytimeRatio * rankTime(cursor, environmentContext);
+
+        // factor in bias
+        double bias = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.BIAS));
+        entryRank += bias;
+
+        entryRank = playtimeRatio * entryRank;
+        return entryRank;
     }
 
     final static int OUT_FRAME_HOUR = 1;
+    final boolean LOG_TO_FILE = false;
+
+    /**
+     * rankTime wrapper.
+     * @param cursor
+     * @param environmentContext
+     * @return
+     */
+    private double rankTime(Cursor cursor, EnvironmentContext environmentContext) {
+        String firstResumeStr = cursor.getString(cursor.getColumnIndex(dbRankableEntry.DATE_FIRST_RESUME));
+        String lastPauseStr = cursor.getString(cursor.getColumnIndex(dbRankableEntry.DATE_LAST_PAUSE));
+
+        DateTime firstResume = DateTime.parse(firstResumeStr);
+        DateTime lastPause = DateTime.parse(lastPauseStr);
+        DateTime currentDatetime = environmentContext.getDateTime();
+        double timeRank = this.rankTime(new LocalTime(firstResume),
+                                        new LocalTime(lastPause),
+                                        new LocalTime(currentDatetime));
+
+        if (LOG_TO_FILE) {
+            //TODO
+        }
+        return timeRank;
+    }
 
     /**
      * For now we are going to disregard timezones and compare local times directly - in order to avoid

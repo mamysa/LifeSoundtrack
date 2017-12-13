@@ -39,6 +39,7 @@ public class EnvironmentContext {
     private Location lastLocation;
     private String mood;
     private String weather;
+    private DateTime dateTime;
 
     private EnvironmentContext() {
         this.lastLocation = LOCATION_DEFAULT_VALUE;
@@ -66,5 +67,29 @@ public class EnvironmentContext {
 
     public void setWeather(String weather) {
         this.weather = weather;
+    }
+
+    private void setTime(DateTime dt) {
+        this.dateTime = dt;
+    }
+
+    public DateTime getDateTime() {
+        return this.dateTime;
+    }
+
+    /**
+     * Copy environment context for ranking in order to avoid environment
+     * getting modified mid-ranking process.
+     * @return
+     */
+    public static EnvironmentContext copy() {
+        EnvironmentContext envContext = EnvironmentContext.getInstance();
+        synchronized (EnvironmentContext.class) {
+            EnvironmentContext ctx = new EnvironmentContext();
+            ctx.setTime(new DateTime());
+            ctx.setLastLocation(envContext.getLastLocation());
+            ctx.setMood(envContext.getMood());
+            return ctx;
+        }
     }
 }
