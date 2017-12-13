@@ -102,7 +102,7 @@ public class PlaylistRankingTask implements Runnable{
         String a = cursor.getString(cursor.getColumnIndex(DBTableAudio.DATA));
 
         if (LOG_TO_FILE) {
-            String debugStr = String.format("Begin ranking row %s: \n", a);
+            String debugStr = String.format("Begin ranking row %s:\n", a);
             this.appendtoDebugLogFile(debugStr);
         }
 
@@ -145,8 +145,7 @@ public class PlaylistRankingTask implements Runnable{
                                         new LocalTime(currentDatetime));
 
         if (LOG_TO_FILE) {
-            //TODO
-            String debugStr = String.format("rankTime(): \n, start: %s, end: %s, current: %s, timeRank, %s\n",
+            String debugStr = String.format("rankTime(): start=%s, end=%s, current=%s, timeRank=%s\n",
                     new LocalTime(firstResume), new LocalTime(lastPause), new LocalTime(currentDatetime), timeRank);
             this.appendtoDebugLogFile(debugStr);
         }
@@ -248,7 +247,7 @@ public class PlaylistRankingTask implements Runnable{
         double ratio = playtime / duration;
 
         if (LOG_TO_FILE) {
-            String debugStr = String.format("computePlaytimeRatio(): \n playtime=%s, duration=%s, ratio=%s\n",
+            String debugStr = String.format("computePlaytimeRatio(): playtime=%s, duration=%s, ratio=%s\n",
                     playtime, duration, ratio);
             this.appendtoDebugLogFile(debugStr);
         }
@@ -271,9 +270,10 @@ public class PlaylistRankingTask implements Runnable{
         DateTime s = DateTime.parse(switchTo);
         DateTime e = DateTime.parse(switchFrom);
         Period diff = new Period(s,e);
+        // FIXME rankingCutoffThreshold is wrong!
         if (diff.toStandardSeconds().getSeconds() == 0 || Math.abs(diff.toStandardHours().getHours()) >= rankingCutoffThreshold) {
             if (LOG_TO_FILE) {
-                String debugStr = String.format("computeRealPlaytimeRatio():\n switchTo=%s, switchFrom=%s, diff=%s, ratio=%s",
+                String debugStr = String.format("computeRealPlaytimeRatio(): switchTo=%s, switchFrom=%s, diff=%s, ratio=%s\n",
                     switchTo, switchFrom, diff, 0.0);
                 this.appendtoDebugLogFile(debugStr);
             }
@@ -283,7 +283,7 @@ public class PlaylistRankingTask implements Runnable{
         double ratio = playtime / (double)diff.toStandardSeconds().getSeconds();
         // maybe non-linear function here?
         if (LOG_TO_FILE) {
-            String debugStr = String.format("computeRealPlaytimeRatio():\n switchTo=%s, switchFrom=%s, diff=%s, ratio=%s",
+            String debugStr = String.format("computeRealPlaytimeRatio(): switchTo=%s, switchFrom=%s, diff=%s, ratio=%s\n",
                     switchTo, switchFrom, diff, ratio);
             this.appendtoDebugLogFile(debugStr);
         }
@@ -329,7 +329,7 @@ public class PlaylistRankingTask implements Runnable{
         }
     }
 
-    private void appendtoDebugLogFile(String s) {
+    private synchronized void appendtoDebugLogFile(String s) {
         try {
             this.logFileWriter.append(s);
         } catch (IOException ex) {
