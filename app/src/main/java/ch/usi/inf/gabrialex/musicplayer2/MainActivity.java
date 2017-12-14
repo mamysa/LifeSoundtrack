@@ -347,7 +347,10 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
             Intent intent = new Intent(this, DisplayRankLogActivity.class);
             startActivity(intent);
         }
-
+        if (id == R.id.trigger_song_position_activity) {
+            Intent intent = new Intent(this, MapsActivity2.class);
+            startActivity(intent);
+        }
         return super.onOptionsItemSelected(item);
     }
 }

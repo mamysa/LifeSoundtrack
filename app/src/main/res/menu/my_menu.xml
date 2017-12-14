@@ -10,5 +10,8 @@
         android:id="@+id/trigger_debug_log_activity"
         android:title="Explain"
         app:showAsAction="always" />
-
+    <item
+        android:id="@+id/trigger_song_position_activity"
+        android:title="Song Places"
+        app:showAsAction="never" />
 </menu>
