@@ -109,8 +109,8 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         Intent intent = new Intent(this, MusicPlayerService.class);
         bindService(intent, this.musicServiceConnection, Context.BIND_AUTO_CREATE);
         this.broadcastManager = LocalBroadcastManager.getInstance(this);
-        Intent locationIntent = new Intent(this, LocationService.class);
-        bindService(locationIntent, this.locationServiceConnection, Context.BIND_AUTO_CREATE);
+        //Intent locationIntent = new Intent(this, LocationService.class);
+        //bindService(locationIntent, this.locationServiceConnection, Context.BIND_AUTO_CREATE);
 
     }
 

@@ -118,6 +118,7 @@ public class PlaylistRankingTask implements Runnable{
 
         //mood Ranking
         entryRank+= realPlaytimeRatio * rankMood(cursor, environmentContext);
+        entryRank+= realPlaytimeRatio * rankWeather(cursor, environmentContext);
         entryRank = playtimeRatio * entryRank;
 
         if (LOG_TO_FILE) {
@@ -154,6 +155,30 @@ public class PlaylistRankingTask implements Runnable{
         return moodRank;
     }
 
+    /**
+     * rankWeather.
+     * @param cursor
+     * @param environmentContext
+     * @return
+     */
+    private double rankWeather(Cursor cursor, EnvironmentContext environmentContext) {
+        String weather = cursor.getString(cursor.getColumnIndex(dbRankableEntry.WEATHER));
+        String envWeather = environmentContext.getWeather();
+        double weatherRank;
+        if(weather != null && weather.equals(envWeather)){
+            weatherRank = 1.0;
+        }
+        else {
+            weatherRank = 0.0;
+        }
+
+        if (LOG_TO_FILE) {
+            String debugStr = String.format("rankWeather(): environmentWeather=%s, entryWeather=%s, weatherRank=%s\n",
+                    envWeather, weather, weatherRank);
+            this.appendtoDebugLogFile(debugStr);
+        }
+        return weatherRank;
+    }
 
     /**
      * rankTime wrapper.
@@ -173,7 +198,7 @@ public class PlaylistRankingTask implements Runnable{
                                         new LocalTime(currentDatetime));
 
         if (LOG_TO_FILE) {
-            String debugStr = String.format("rankTime(): start=%s, end=%s, current=%s, timeRank=%s\n",
+            String debugStr = String.format("rankTime(): start=%s, end=%s, current=%s, moodRank=%s\n",
                     new LocalTime(firstResume), new LocalTime(lastPause), new LocalTime(currentDatetime), timeRank);
             this.appendtoDebugLogFile(debugStr);
         }

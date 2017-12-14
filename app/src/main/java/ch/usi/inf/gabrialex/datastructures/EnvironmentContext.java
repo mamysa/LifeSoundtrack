@@ -89,6 +89,7 @@ public class EnvironmentContext {
             ctx.setTime(new DateTime());
             ctx.setLastLocation(envContext.getLastLocation());
             ctx.setMood(envContext.getMood());
+            ctx.setWeather(envContext.getWeather());
             return ctx;
         }
     }

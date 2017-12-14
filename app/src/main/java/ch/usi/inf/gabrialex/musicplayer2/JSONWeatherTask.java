@@ -34,7 +34,7 @@ public class JSONWeatherTask extends AsyncTask<String, Void, Weather> {
     protected void onPostExecute(Weather weather) {
         super.onPostExecute(weather);
         EnvironmentContext.getInstance().setWeather(weather.currentCondition.getCondition());
-        Log.d("WEATHER", weather.currentCondition.getCondition());
+        Log.d("WEATHER", EnvironmentContext.getInstance().getWeather());
     }
 
 }

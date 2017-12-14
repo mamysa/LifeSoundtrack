@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import ch.usi.inf.gabrialex.service.LibraryUpdateTask;
+import ch.usi.inf.gabrialex.service.LocationService;
 
 public class RealSplashActivity extends AppCompatActivity implements LibraryUpdateEventListener {
 
@@ -15,6 +16,8 @@ public class RealSplashActivity extends AppCompatActivity implements LibraryUpda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_real_splash);
         if (requestUserForPermissions()) {
+            Intent locationIntent = new Intent(this, LocationService.class);
+            this.startService(locationIntent);
             this.startLibraryUpdateTask();
         }
     }
