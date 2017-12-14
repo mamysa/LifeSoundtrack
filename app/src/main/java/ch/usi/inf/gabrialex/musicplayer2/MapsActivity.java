@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,7 +55,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         DBHelper helper = DBHelper.getInstance(this);
         Log.d("MAPS:", "SONG ID: " + currentSongId);
         String query = String.format(
-                " SELECT locationLon, locationLat FROM %s WHERE %s == %s;",
+                " SELECT locationLon, locationLat, listeningDuration FROM %s WHERE %s == %s AND listeningDuration > 90;",
                 dbRankableEntry.TABLE_NAME,
                 dbRankableEntry.AUDIO_ID, currentSongId);
 
@@ -65,29 +66,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (cursor != null) {
             Log.d("MAPS:", "CURSOR NOT EMPTY");
             cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                Log.d("MAPS:", "CURSOR LAT: " + cursor.getString(cursor.getColumnIndex(dbRankableEntry.LOCATION_LAT)));
+            while (cursor != null && !cursor.isAfterLast()) {
+                Log.d("MAPS:", "CURSOR LIST DUR: " + cursor.getString(cursor.getColumnIndex(dbRankableEntry.LISTENING_DURATION)));
                 lat.add(cursor.getString(cursor.getColumnIndex(dbRankableEntry.LOCATION_LAT)));
                 lon.add(cursor.getString(cursor.getColumnIndex(dbRankableEntry.LOCATION_LON)));
 
                 cursor.moveToNext();
             }
-            ArrayList<Marker> markers = new ArrayList<Marker>();
-            for (int i=0; i<lat.size(); i++) {
-                if (lat.get(i)!= null && lon.get(i)!= null){
-                    LatLng latLon = new LatLng(Double.valueOf(lat.get(i)), Double.valueOf(lon.get(i)));
-                    markers.add(mMap.addMarker(new MarkerOptions().position(latLon).title("Place "+ i)));
-                    //mMap.moveCamera(CameraUpdateFactory.newLatLng());
+            if (!lat.isEmpty()){
+                ArrayList<Marker> markers = new ArrayList<Marker>();
+                for (int i=0; i<lat.size(); i++) {
+                    if (lat.get(i)!= null && lon.get(i)!= null){
+                        LatLng latLon = new LatLng(Double.valueOf(lat.get(i)), Double.valueOf(lon.get(i)));
+                        markers.add(mMap.addMarker(new MarkerOptions().position(latLon).title("Place "+ i)));
+                        //mMap.moveCamera(CameraUpdateFactory.newLatLng());
+                    }
                 }
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                for (Marker marker : markers) {
+                    builder.include(marker.getPosition());
+                }
+                LatLngBounds bounds = builder.build();
+                int padding = 0; // offset from edges of the map in pixels
+                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                googleMap.animateCamera(cu);
             }
-            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            for (Marker marker : markers) {
-                builder.include(marker.getPosition());
+            else {
+                Toast.makeText(this, "No Places Found",
+                        Toast.LENGTH_LONG).show();
             }
-            LatLngBounds bounds = builder.build();
-            int padding = 0; // offset from edges of the map in pixels
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-            googleMap.animateCamera(cu);
         }
     }
 }
