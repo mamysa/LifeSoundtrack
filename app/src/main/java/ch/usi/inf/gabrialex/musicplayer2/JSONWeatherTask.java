@@ -1,6 +1,7 @@
 package ch.usi.inf.gabrialex.musicplayer2;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONException;
 
@@ -33,6 +34,7 @@ public class JSONWeatherTask extends AsyncTask<String, Void, Weather> {
     protected void onPostExecute(Weather weather) {
         super.onPostExecute(weather);
         EnvironmentContext.getInstance().setWeather(weather.currentCondition.getCondition());
+        Log.d("WEATHER", weather.currentCondition.getCondition());
     }
 
 }

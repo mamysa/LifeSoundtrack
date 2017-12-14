@@ -3,7 +3,6 @@ package ch.usi.inf.gabrialex.musicplayer2;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -48,8 +47,11 @@ public class RealSplashActivity extends AppCompatActivity implements LibraryUpda
     public void onLibraryUpdateComplete() {
         //Toast.makeText(this, "Library update complete!", Toast.LENGTH_LONG).show();
         System.out.println("onLibraryUpdateComplete");
-        Intent mainIntent = new Intent(RealSplashActivity .this,MainActivity.class);
-        RealSplashActivity.this.startActivity(mainIntent);
+        //Intent mainIntent = new Intent(RealSplashActivity .this,MainActivity.class);
+        //RealSplashActivity.this.startActivity(mainIntent);
+        //RealSplashActivity.this.finish();
+        Intent moodIntent = new Intent(RealSplashActivity .this,MoodActivity.class);
+        RealSplashActivity.this.startActivity(moodIntent);
         RealSplashActivity.this.finish();
     }
 

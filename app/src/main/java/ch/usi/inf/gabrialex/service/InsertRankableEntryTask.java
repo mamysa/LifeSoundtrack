@@ -39,6 +39,10 @@ public class InsertRankableEntryTask implements Runnable {
         DateTime firstResumed = dates.get(0);
         DateTime lastPaused = dates.get(dates.size()-1);
 
+        String mood = this.musicContext.getMoods().get(0);
+        String weather = this.musicContext.getWeatherConditions().get(0);
+
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(dbRankableEntry.AUDIO_ID, trackID);
         contentValues.put(dbRankableEntry.DATE_FIRST_RESUME, firstResumed.toString());
@@ -46,6 +50,8 @@ public class InsertRankableEntryTask implements Runnable {
         contentValues.put(dbRankableEntry.DATE_PLAYER_SWITCH_TO, this.musicContext.getStartTimestamp().toString());
         contentValues.put(dbRankableEntry.DATE_PLAYER_SWITCH_FROM, this.musicContext.getEndTimestamp().toString());
         contentValues.put(dbRankableEntry.LISTENING_DURATION, playtime);
+        contentValues.put(dbRankableEntry.MOOD, mood);
+        contentValues.put(dbRankableEntry.WEATHER, weather);
         contentValues.put(dbRankableEntry.LOCATION_LON, location.getLongitude());
         contentValues.put(dbRankableEntry.LOCATION_LAT, location.getLatitude());
         contentValues.put(dbRankableEntry.BIAS, 0);
