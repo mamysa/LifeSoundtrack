@@ -117,8 +117,8 @@ public class PlaylistRankingTask implements Runnable{
         entryRank += bias;
 
         //mood Ranking
-        entryRank+= realPlaytimeRatio * rankMood(cursor, environmentContext);
-        entryRank+= realPlaytimeRatio * rankWeather(cursor, environmentContext);
+        entryRank+= rankMood(cursor, environmentContext);
+        entryRank+= rankWeather(cursor, environmentContext);
         entryRank = playtimeRatio * entryRank;
 
         if (LOG_TO_FILE) {
