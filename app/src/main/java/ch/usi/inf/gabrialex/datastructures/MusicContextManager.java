@@ -59,6 +59,7 @@ public class MusicContextManager {
         EnvironmentContext context = EnvironmentContext.getInstance();
         this.musicContext.addDate(dateTime);
         this.musicContext.addMood(context.getMood());
+        this.musicContext.addWeatherCondition(context.getWeather());
         this.musicContext.addLocation(context.getLastLocation());
     }
 }

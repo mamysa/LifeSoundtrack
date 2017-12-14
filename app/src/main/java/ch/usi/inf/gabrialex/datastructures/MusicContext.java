@@ -31,6 +31,7 @@ public class MusicContext {
     public MusicContext() {
         this.dates = new ArrayList<>();
         this.moods = new ArrayList<>();
+        this.weatherConditions = new ArrayList<>();
         this.locations = new ArrayList<>();
     }
 
@@ -89,8 +90,9 @@ public class MusicContext {
         return weatherConditions;
     }
 
-    public void setWeatherConditions(ArrayList<String> weatherConditions) {
-        this.weatherConditions = weatherConditions;
+    public void addWeatherCondition(String weatherCondition) {
+        this.weatherConditions.add(weatherCondition);
+        this.containsData = true;
     }
 
     public boolean hasData() {
