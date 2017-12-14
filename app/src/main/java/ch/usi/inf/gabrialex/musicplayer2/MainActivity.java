@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
     private LocalBroadcastManager broadcastManager;
     private ArrayList<Audio> playlist;
 
-
     private PlayerControlFragment playerControlFragment;
     private PlaylistFragment playlistFragment;
     private HashMap<String, EventHandler> eventHandlers;

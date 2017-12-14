@@ -208,11 +208,11 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            EventHandler handler = requestHandlers.get(action);
-            if (handler != null) {
-                handler.handleEvent(intent);
-            }
+        String action = intent.getAction();
+        EventHandler handler = requestHandlers.get(action);
+        if (handler != null) {
+            handler.handleEvent(intent);
+        }
         }
     };
 }
