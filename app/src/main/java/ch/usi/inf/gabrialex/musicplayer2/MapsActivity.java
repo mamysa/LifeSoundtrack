@@ -5,11 +5,14 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -69,14 +72,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 cursor.moveToNext();
             }
-            // Add a marker in Sydney and move the camera
+            ArrayList<Marker> markers = new ArrayList<Marker>();
             for (int i=0; i<lat.size(); i++) {
                 if (lat.get(i)!= null && lon.get(i)!= null){
                     LatLng latLon = new LatLng(Double.valueOf(lat.get(i)), Double.valueOf(lon.get(i)));
-                    mMap.addMarker(new MarkerOptions().position(latLon).title("Place "+ i));
+                    markers.add(mMap.addMarker(new MarkerOptions().position(latLon).title("Place "+ i)));
                     //mMap.moveCamera(CameraUpdateFactory.newLatLng());
                 }
             }
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (Marker marker : markers) {
+                builder.include(marker.getPosition());
+            }
+            LatLngBounds bounds = builder.build();
+            int padding = 0; // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            googleMap.animateCamera(cu);
         }
     }
 }
