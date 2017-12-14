@@ -92,8 +92,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 googleMap.animateCamera(cu);
             }
             else {
-                Toast.makeText(this, "No Places Found",
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "No Places Found", Toast.LENGTH_LONG).show();
             }
         }
     }

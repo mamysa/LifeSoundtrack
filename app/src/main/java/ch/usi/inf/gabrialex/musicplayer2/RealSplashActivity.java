@@ -3,6 +3,8 @@ package ch.usi.inf.gabrialex.musicplayer2;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -16,6 +18,7 @@ public class RealSplashActivity extends AppCompatActivity implements LibraryUpda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_real_splash);
         if (requestUserForPermissions()) {
+
             Intent locationIntent = new Intent(this, LocationService.class);
             this.startService(locationIntent);
             this.startLibraryUpdateTask();
@@ -53,9 +56,19 @@ public class RealSplashActivity extends AppCompatActivity implements LibraryUpda
         //Intent mainIntent = new Intent(RealSplashActivity .this,MainActivity.class);
         //RealSplashActivity.this.startActivity(mainIntent);
         //RealSplashActivity.this.finish();
-        Intent moodIntent = new Intent(RealSplashActivity .this,MoodActivity.class);
-        RealSplashActivity.this.startActivity(moodIntent);
-        RealSplashActivity.this.finish();
+        Looper.prepare();
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                // your code to start second activity. Will wait for 3 seconds before calling this method
+
+                Intent moodIntent = new Intent(RealSplashActivity .this,MoodActivity.class);
+                RealSplashActivity.this.startActivity(moodIntent);
+                RealSplashActivity.this.finish();
+            }
+        }, 2000);
+        Looper.loop();
     }
 
     @Override
