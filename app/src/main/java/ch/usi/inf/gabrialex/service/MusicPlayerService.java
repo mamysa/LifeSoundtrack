@@ -26,28 +26,19 @@ import ch.usi.inf.gabrialex.db.DBTableAudio;
 import ch.usi.inf.gabrialex.protocol.MediaPlayerState;
 import ch.usi.inf.gabrialex.protocol.Protocol;
 
-public class MusicPlayerService extends Service implements PlayerStateEventListener {
+public class MusicPlayerService extends Service implements PlayerStateEventListener, PlaylistUpdateEventListener {
 
     private Binder binder = new MusicPlayerBinder();
     private MediaPlayerAdapter mediaPlayer;
     private LocalBroadcastManager broadcastManager;
 
     private HashMap<String, EventHandler> requestHandlers;
+    private MusicPlayerService self;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        //this.getMusicListing();
-
-        // just for testing for now, will not do thread.join
-        PlaylistRankingTask playlistRankingTask = new PlaylistRankingTask(this);
-        Thread thread = new Thread(playlistRankingTask);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException ex) {
-            // FIXME wat?
-        }
+        this.self = this;
 
         // initialize request handlers
         this.requestHandlers = new HashMap<>();
@@ -70,12 +61,6 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
         // initialize media player
         this.mediaPlayer = new MediaPlayerAdapter();
         this.mediaPlayer.setEventListener(this);
-        this.mediaPlayer.playlistChanged();
-
-
-
-
-
     }
 
     @Override
@@ -86,16 +71,15 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
     }
 
     /**
-     * Request handler for song listing. Playlists are treated slightly differently as opposed
-     * to other player state - actual playlist is stored in a singleton object. This way, we
-     * avoid passing a lot of date using intents.
+     * Run playlist ranking routine on separate thread.
      */
     private final EventHandler RequestSongListing = new EventHandler() {
         @Override
         public void handleEvent(Intent intent) {
-            Intent in = new Intent();
-            in.setAction(Protocol.RESPONSE_SONG_LISTING);
-            broadcastManager.sendBroadcast(in);
+        PlaylistRankingTask playlistRankingTask = new PlaylistRankingTask(self);
+        playlistRankingTask.setEventListener(self);
+        Thread thread = new Thread(playlistRankingTask);
+        thread.start();
         }
     };
 
@@ -160,6 +144,18 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
             mediaPlayer.reportTrack();
         }
     };
+
+
+    /**
+     * Triggers once the playlist has been generated.
+     */
+    @Override
+    public void onPlaylistUpdated() {
+        Intent in = new Intent();
+        in.setAction(Protocol.RESPONSE_SONG_LISTING);
+        broadcastManager.sendBroadcast(in);
+        this.mediaPlayer.playlistChanged();
+    }
 
     /**
      * Triggers when playback position of the track is changed.
