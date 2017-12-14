@@ -228,6 +228,18 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         this.eventListener.onPlaybackPositionChanged(this.mediaPlayer.getCurrentPosition(), this.activeMedia.getDuration());
     }
 
+    public void eject() {
+        if (this.activeMedia != null) {
+            MusicContextManager context = MusicContextManager.getInstance();
+            if ( this.currentState == MediaPlayerState.PLAYING) {
+                context.timestamp();
+            }
+            context.trackChanged(null);
+            this.mediaPlayer.pause();
+            this.currentState = MediaPlayerState.PAUSED;
+            this.eventListener.onTrackSelected(null);
+        }
+    }
 
     public void release() {
         this.mediaPlayer.release();

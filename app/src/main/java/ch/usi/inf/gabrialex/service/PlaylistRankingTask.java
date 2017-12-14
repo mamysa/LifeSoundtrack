@@ -131,9 +131,9 @@ public class PlaylistRankingTask implements Runnable{
         entryRank += bias;
 
         //mood Ranking
-        entryRank+= rankMood(cursor, environmentContext);
-        entryRank+= rankWeather(cursor, environmentContext);
-        entryRank = playtimeRatio * entryRank;
+        entryRank += rankMood(cursor, environmentContext);
+        entryRank += rankWeather(cursor, environmentContext);
+        entryRank = playtimeRatio * entryRank + getBias(cursor);
 
         if (LOG_TO_FILE) {
             String debugStr = String.format("Final row rank: %s\n\n", entryRank);
@@ -369,6 +369,16 @@ public class PlaylistRankingTask implements Runnable{
         return (days == 0) ? 1.0 : 1.0/(double)days;
     }
 
+    private double getBias(Cursor cursor) {
+        double bias = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.BIAS));
+        if (LOG_TO_FILE) {
+            String debugStr = String.format("getBias: bias=%s", bias);
+            this.appendtoDebugLogFile(debugStr);
+        }
+
+        return bias;
+    }
+
 
     /**
      * Helper method for opening log file. If opening log file fails, disable logging.
@@ -396,7 +406,7 @@ public class PlaylistRankingTask implements Runnable{
         }
     }
 
-    private synchronized void appendtoDebugLogFile(String s) {
+    private void appendtoDebugLogFile(String s) {
         try {
             this.logFileWriter.append(s);
         } catch (IOException ex) {

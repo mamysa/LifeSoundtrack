@@ -76,10 +76,11 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
     private final EventHandler RequestSongListing = new EventHandler() {
         @Override
         public void handleEvent(Intent intent) {
-        PlaylistRankingTask playlistRankingTask = new PlaylistRankingTask(self);
-        playlistRankingTask.setEventListener(self);
-        Thread thread = new Thread(playlistRankingTask);
-        thread.start();
+            mediaPlayer.eject();
+            PlaylistRankingTask playlistRankingTask = new PlaylistRankingTask(self);
+            playlistRankingTask.setEventListener(self);
+            Thread thread = new Thread(playlistRankingTask);
+            thread.start();
         }
     };
 
