@@ -112,7 +112,6 @@ public class PlayerControlFragment extends Fragment {
         }
     }
 
-
     /**
      * Update text on play/pause button when media player changes its state.
      * @param state

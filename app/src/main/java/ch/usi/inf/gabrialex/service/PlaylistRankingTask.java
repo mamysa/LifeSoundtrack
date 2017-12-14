@@ -82,9 +82,9 @@ public class PlaylistRankingTask implements Runnable{
 
                     if (audio == null || audio.getId() != g) {
                         if (audio != null) {
-                            // set rank here
-                            playlist.addEntry(audio);
+                            audio.setRank(rank);
                             rank = 0.0d;
+                            playlist.addEntry(audio);
                         }
 
                         audio = new Audio(a,b,c,d,e,Integer.parseInt(f),(int)g);
@@ -96,6 +96,8 @@ public class PlaylistRankingTask implements Runnable{
                 }
                 cursor.close();
             }
+
+            playlist.onPlaylistUpdated();
         }
 
         if (this.LOG_TO_FILE) {
@@ -210,7 +212,7 @@ public class PlaylistRankingTask implements Runnable{
                                         new LocalTime(currentDatetime));
 
         if (LOG_TO_FILE) {
-            String debugStr = String.format("rankTime(): start=%s, end=%s, current=%s, moodRank=%s\n",
+            String debugStr = String.format("rankTime(): start=%s, end=%s, current=%s, timeRank=%s\n",
                     new LocalTime(firstResume), new LocalTime(lastPause), new LocalTime(currentDatetime), timeRank);
             this.appendtoDebugLogFile(debugStr);
         }

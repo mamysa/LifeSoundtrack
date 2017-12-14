@@ -1,6 +1,8 @@
 package ch.usi.inf.gabrialex.datastructures;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import ch.usi.inf.gabrialex.service.Audio;
 
@@ -112,5 +114,14 @@ public class Playlist {
 
     public boolean playlistEmpty() {
         return this.playlist.size() == 0;
+    }
+
+    public void onPlaylistUpdated() {
+        Collections.sort(this.playlist, new Comparator<Audio>() {
+            @Override
+            public int compare(Audio a, Audio b) {
+                return Double.compare(b.getRank(), a.getRank());
+            }
+        });
     }
 }

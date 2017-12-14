@@ -30,7 +30,7 @@ public class Audio implements Comparable<Audio>, Parcelable {
         this.artist = artist;
         this.length = length;
         this.id = id;
-        this.rank = 0;
+        this.rank = 0.0d;
     }
 
     public Audio(Parcel p) {
@@ -41,6 +41,7 @@ public class Audio implements Comparable<Audio>, Parcelable {
         this.artist = p.readString();
         this.length = p.readInt();
         this.id = p.readInt();
+        this.rank = p.readDouble();
     }
 
     public String getTracknum() {
@@ -100,7 +101,7 @@ public class Audio implements Comparable<Audio>, Parcelable {
         parcel.writeString(this.artist);
         parcel.writeInt(this.length);
         parcel.writeInt(this.id);
-
+        parcel.writeDouble(this.rank);
     }
 
     public static final Parcelable.Creator<Audio> CREATOR = new Parcelable.Creator<Audio>() {
