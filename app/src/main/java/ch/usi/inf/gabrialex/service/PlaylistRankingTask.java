@@ -220,8 +220,9 @@ public class PlaylistRankingTask implements Runnable{
         }
 
         // otherwise lookup
-        LocalTime beforeStart = start.minus(new Period(-OUT_FRAME_HOUR, 0, 0, 0));
-        LocalTime afterEnd = end.plus(new Period(+OUT_FRAME_HOUR, 0, 0, 0));
+        LocalTime beforeStart = start.minus(new Period(OUT_FRAME_HOUR, 0, 0, 0));
+        LocalTime afterEnd = end.plus(new Period(OUT_FRAME_HOUR, 0, 0, 0));
+        System.out.println(beforeStart + " " + afterEnd);
 
         double insideStart = this.insideInterval(beforeStart, start, now);
         double insideEnd = this.insideInterval(end, afterEnd, now);
