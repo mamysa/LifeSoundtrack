@@ -35,8 +35,7 @@
             android:exported="true" />
 
         <activity
-            android:name=".RealSplashActivity"
-            android:theme="@style/SplashTheme">
+            android:name=".RealSplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
