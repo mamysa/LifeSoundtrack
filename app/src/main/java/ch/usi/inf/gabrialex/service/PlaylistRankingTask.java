@@ -116,6 +116,8 @@ public class PlaylistRankingTask implements Runnable{
         double bias = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.BIAS));
         entryRank += bias;
 
+        //mood Ranking
+        entryRank+= realPlaytimeRatio * rankMood(cursor, environmentContext);
         entryRank = playtimeRatio * entryRank;
 
         if (LOG_TO_FILE) {
@@ -126,6 +128,32 @@ public class PlaylistRankingTask implements Runnable{
     }
 
     final static int OUT_FRAME_HOUR = 1;
+
+    /**
+     * rankMood.
+     * @param cursor
+     * @param environmentContext
+     * @return
+     */
+    private double rankMood(Cursor cursor, EnvironmentContext environmentContext) {
+        String mood = cursor.getString(cursor.getColumnIndex(dbRankableEntry.MOOD));
+        String envMood = environmentContext.getMood();
+        double moodRank;
+        if(mood != null && mood.equals(envMood)){
+            moodRank = 1.0;
+        }
+        else {
+            moodRank = 0.0;
+        }
+
+        if (LOG_TO_FILE) {
+            String debugStr = String.format("rankMood(): environmentMood=%s, entryMood=%s, timeRank=%s\n",
+                    envMood, mood, moodRank);
+            this.appendtoDebugLogFile(debugStr);
+        }
+        return moodRank;
+    }
+
 
     /**
      * rankTime wrapper.
