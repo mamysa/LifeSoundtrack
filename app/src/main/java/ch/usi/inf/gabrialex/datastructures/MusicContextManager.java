@@ -35,6 +35,9 @@ public class MusicContextManager {
 
     private MusicContext musicContext = null;
 
+    public MusicContext getMusicContext() {
+        return musicContext;
+    }
 
     public void trackChanged(Audio audio) {
         if (this.musicContext != null && this.musicContext.hasAudio()) {

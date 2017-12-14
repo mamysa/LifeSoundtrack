@@ -118,6 +118,8 @@ public class MusicContext {
             Location location = env.getLastLocation();
             this.locations.add(location);
             this.locations.add(location);
+            this.weatherConditions.add(env.getWeather());
+            this.moods.add(env.getMood());
         }
     }
 }
