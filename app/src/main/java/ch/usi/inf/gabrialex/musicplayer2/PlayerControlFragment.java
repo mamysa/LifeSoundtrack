@@ -106,9 +106,10 @@ public class PlayerControlFragment extends Fragment {
 
     public void updateView(Audio t) {
         TextView view = getView().findViewById(R.id.song_title_box);
-        view.setText(t.getTitle() + " - " + t.getArtist());
-
-        SeekBar seekBar = getView().findViewById(R.id.playback_seekbar);
+        view.setText("No track selected");
+        if (t != null) {
+            view.setText(t.getTitle() + " - " + t.getArtist());
+        }
     }
 
 

@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
     private LocalBroadcastManager broadcastManager;
     private ArrayList<Audio> playlist;
 
-
     private PlayerControlFragment playerControlFragment;
     private PlaylistFragment playlistFragment;
     private HashMap<String, EventHandler> eventHandlers;
@@ -112,8 +111,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
             inf.addAction(t);
         }
         this.broadcastManager.registerReceiver(this.broadcastReceiver, inf);
-        onRequestPlaylistListing();
-        onUpdateCurrentTrack();
+        this.onUpdateCurrentTrack();
     }
 
     /**
@@ -289,7 +287,6 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MusicPlayerService.MusicPlayerBinder b = (MusicPlayerService.MusicPlayerBinder)iBinder;
-            onRequestPlaylistListing();
         }
 
         @Override
@@ -336,6 +333,9 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         if (id == R.id.trigger_song_position_activity) {
             Intent intent = new Intent(this, MapsActivity.class);
             startActivity(intent);
+        }
+        if (id == R.id.trigger_playlist_generation) {
+            this.onRequestPlaylistListing();
         }
         return super.onOptionsItemSelected(item);
     }

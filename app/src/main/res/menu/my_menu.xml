@@ -11,6 +11,10 @@
         android:title="Explain"
         app:showAsAction="always" />
     <item
+        android:id="@+id/trigger_playlist_generation"
+        android:title="Generate"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/trigger_song_position_activity"
         android:title="Song Places"
         app:showAsAction="never" />

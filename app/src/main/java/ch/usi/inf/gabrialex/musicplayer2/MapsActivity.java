@@ -18,6 +18,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
+import ch.usi.inf.gabrialex.datastructures.MusicContext;
 import ch.usi.inf.gabrialex.datastructures.MusicContextManager;
 import ch.usi.inf.gabrialex.db.DBHelper;
 import ch.usi.inf.gabrialex.db.DBTableAudio;
@@ -51,7 +52,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        int currentSongId = MusicContextManager.getInstance().getMusicContext().getActiveMedia().getId();
+        MusicContext musicContext = MusicContextManager.getInstance().getMusicContext();
+        if (musicContext == null || musicContext.getActiveMedia() == null)  {
+            Toast.makeText(this, "No Places Found", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        int currentSongId = musicContext.getActiveMedia().getId();
         DBHelper helper = DBHelper.getInstance(this);
         Log.d("MAPS:", "SONG ID: " + currentSongId);
         String query = String.format(

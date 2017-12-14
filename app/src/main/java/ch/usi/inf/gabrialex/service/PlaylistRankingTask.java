@@ -30,12 +30,20 @@ public class PlaylistRankingTask implements Runnable{
 
     final static public String LOG_FILE_NAME = "rankingDebugLog.txt";
     private boolean LOG_TO_FILE = true; // FIXME all this file logging stuff must go somewhere else!
+    private PlaylistUpdateEventListener eventListener;
     FileWriter logFileWriter = null;
 
     public PlaylistRankingTask(Context context) {
        this.context = context;
     }
 
+    /**
+     * Set event listener.
+     * @param listener
+     */
+    public void setEventListener(PlaylistUpdateEventListener listener) {
+        this.eventListener = listener;
+    }
 
     @Override
     public void run() {
@@ -92,6 +100,10 @@ public class PlaylistRankingTask implements Runnable{
 
         if (this.LOG_TO_FILE) {
             this.closeDebugLogFile();
+        }
+
+        if (this.eventListener != null) {
+            this.eventListener.onPlaylistUpdated();
         }
     }
 
@@ -220,8 +232,8 @@ public class PlaylistRankingTask implements Runnable{
         }
 
         // otherwise lookup
-        LocalTime beforeStart = start.minus(new Period(-OUT_FRAME_HOUR, 0, 0, 0));
-        LocalTime afterEnd = end.plus(new Period(+OUT_FRAME_HOUR, 0, 0, 0));
+        LocalTime beforeStart = start.minus(new Period(OUT_FRAME_HOUR, 0, 0, 0));
+        LocalTime afterEnd = end.plus(new Period(OUT_FRAME_HOUR, 0, 0, 0));
 
         double insideStart = this.insideInterval(beforeStart, start, now);
         double insideEnd = this.insideInterval(end, afterEnd, now);
