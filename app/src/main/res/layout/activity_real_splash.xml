@@ -6,9 +6,4 @@
     android:layout_height="match_parent"
     tools:context="ch.usi.inf.gabrialex.musicplayer2.RealSplashActivity">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:text="This is real splash activity. We will be doing playlist updating here."
-        android:layout_height="match_parent" />
-
 </android.support.constraint.ConstraintLayout>
