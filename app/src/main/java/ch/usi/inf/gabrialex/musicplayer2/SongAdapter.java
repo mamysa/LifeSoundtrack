@@ -61,6 +61,7 @@ public class SongAdapter extends ArrayAdapter<Audio> {
 
             TextView tt = (TextView) v.findViewById(R.id.toptext);
             TextView ttd = (TextView) v.findViewById(R.id.toptextdata);
+            TextView rank = (TextView) v.findViewById(R.id.ranktext);
 
 
             // check to see if each individual textview is null.
@@ -71,6 +72,8 @@ public class SongAdapter extends ArrayAdapter<Audio> {
             if (ttd != null){
                 ttd.setText(i.getArtist() + " - " + i.getAlbum());
             }
+
+            rank.setText("" + i.getRank());
 
         }
 
