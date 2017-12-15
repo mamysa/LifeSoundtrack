@@ -203,7 +203,6 @@ public class PlaylistRankingTask implements Runnable{
         location.setLatitude(lat);
 
         Location envLocation = context.getLastLocation();
-        System.out.println(location + " " + envLocation);
 
         // do not perform ranking when location info is missing!
         if ((Double.isInfinite(lon) && Double.isInfinite(lat)) ||
@@ -410,7 +409,7 @@ public class PlaylistRankingTask implements Runnable{
     private double getBias(Cursor cursor) {
         double bias = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.BIAS));
         if (LOG_TO_FILE) {
-            String debugStr = String.format("getBias: bias=%s", bias);
+            String debugStr = String.format("getBias: bias=%s\n", bias);
             this.appendToDebugLogFile(debugStr);
         }
 

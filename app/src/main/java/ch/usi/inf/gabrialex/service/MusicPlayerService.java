@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ch.usi.inf.gabrialex.datastructures.Playlist;
+import ch.usi.inf.gabrialex.datastructures.RankWeightPreferences;
 import ch.usi.inf.gabrialex.db.DBHelper;
 import ch.usi.inf.gabrialex.db.DBTableAudio;
 import ch.usi.inf.gabrialex.protocol.MediaPlayerState;
@@ -61,6 +62,8 @@ public class MusicPlayerService extends Service implements PlayerStateEventListe
         // initialize media player
         this.mediaPlayer = new MediaPlayerAdapter();
         this.mediaPlayer.setEventListener(this);
+
+        RankWeightPreferences.readPreferences(this);
     }
 
     @Override

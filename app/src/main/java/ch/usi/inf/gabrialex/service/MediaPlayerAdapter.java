@@ -232,10 +232,10 @@ public class MediaPlayerAdapter implements MediaPlayer.OnCompletionListener {
         if (this.activeMedia != null) {
             MusicContextManager context = MusicContextManager.getInstance();
             if ( this.currentState == MediaPlayerState.PLAYING) {
+                this.mediaPlayer.pause();
                 context.timestamp();
             }
             context.trackChanged(null);
-            this.mediaPlayer.pause();
             this.currentState = MediaPlayerState.PAUSED;
             this.eventListener.onTrackSelected(null);
         }
