@@ -5,5 +5,5 @@ package ch.usi.inf.gabrialex.musicplayer2;
  */
 
 public interface LibraryUpdateEventListener {
-    void onLibraryUpdateComplete();
+    void onLibraryUpdateComplete(int numAdded, int numRemoved);
 }

@@ -91,7 +91,7 @@ public class LibraryUpdateTask implements Runnable {
         long trackSAddedQty = tracksAdded.size();
 
         if (this.eventListener != null) {
-            this.eventListener.onLibraryUpdateComplete();
+            this.eventListener.onLibraryUpdateComplete((int)trackSAddedQty, (int)tracksRemovedQty);
         }
     }
 

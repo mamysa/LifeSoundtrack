@@ -50,7 +50,7 @@ public class RealSplashActivity extends AppCompatActivity implements LibraryUpda
      * On library update complete callback. Start main activity.
      */
     @Override
-    public void onLibraryUpdateComplete() {
+    public void onLibraryUpdateComplete(final int numAdded, final int numRemoved) {
         //Toast.makeText(this, "Library update complete!", Toast.LENGTH_LONG).show();
         System.out.println("onLibraryUpdateComplete");
         //Intent mainIntent = new Intent(RealSplashActivity .this,MainActivity.class);
@@ -62,8 +62,9 @@ public class RealSplashActivity extends AppCompatActivity implements LibraryUpda
             @Override
             public void run() {
                 // your code to start second activity. Will wait for 3 seconds before calling this method
-
                 Intent moodIntent = new Intent(RealSplashActivity .this,MoodActivity.class);
+                moodIntent.putExtra("1", numAdded);
+                moodIntent.putExtra("2", numRemoved);
                 RealSplashActivity.this.startActivity(moodIntent);
                 RealSplashActivity.this.finish();
             }
