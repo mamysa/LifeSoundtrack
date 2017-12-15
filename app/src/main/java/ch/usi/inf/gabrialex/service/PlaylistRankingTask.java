@@ -2,7 +2,7 @@ package ch.usi.inf.gabrialex.service;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.annotation.IntegerRes;
+import android.location.Location;
 import android.util.Log;
 
 import org.joda.time.DateTime;
@@ -10,7 +10,6 @@ import org.joda.time.LocalTime;
 import org.joda.time.Period;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -51,7 +50,6 @@ public class PlaylistRankingTask implements Runnable{
             this.logFileWriter = this.openDebugLogFile();
         }
 
-
         EnvironmentContext envContext = EnvironmentContext.copy();
         DBHelper helper = DBHelper.getInstance(this.context);
 
@@ -88,7 +86,6 @@ public class PlaylistRankingTask implements Runnable{
                         }
 
                         audio = new Audio(a,b,c,d,e,Integer.parseInt(f),(int)g);
-
                     }
 
                     rank += this.rank(cursor, envContext);
@@ -117,27 +114,20 @@ public class PlaylistRankingTask implements Runnable{
 
         if (LOG_TO_FILE) {
             String debugStr = String.format("Begin ranking row %s:\n", a);
-            this.appendtoDebugLogFile(debugStr);
+            this.appendToDebugLogFile(debugStr);
         }
-
 
         double playtimeRatio = this.computePlaytimeRatio(cursor);
         double realPlaytimeRatio = this.computeRealPlaytimeRatio(cursor);
-
         entryRank += realPlaytimeRatio * rankTime(cursor, environmentContext);
-
-        // factor in bias
-        double bias = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.BIAS));
-        entryRank += bias;
-
-        //mood Ranking
+        entryRank += rankLocation(cursor, environmentContext);
         entryRank += rankMood(cursor, environmentContext);
         entryRank += rankWeather(cursor, environmentContext);
         entryRank = playtimeRatio * entryRank + getBias(cursor);
 
         if (LOG_TO_FILE) {
             String debugStr = String.format("Final row rank: %s\n\n", entryRank);
-            this.appendtoDebugLogFile(debugStr);
+            this.appendToDebugLogFile(debugStr);
         }
         return entryRank;
     }
@@ -164,7 +154,7 @@ public class PlaylistRankingTask implements Runnable{
         if (LOG_TO_FILE) {
             String debugStr = String.format("rankMood(): environmentMood=%s, entryMood=%s, timeRank=%s\n",
                     envMood, mood, moodRank);
-            this.appendtoDebugLogFile(debugStr);
+            this.appendToDebugLogFile(debugStr);
         }
         return moodRank;
     }
@@ -189,9 +179,52 @@ public class PlaylistRankingTask implements Runnable{
         if (LOG_TO_FILE) {
             String debugStr = String.format("rankWeather(): environmentWeather=%s, entryWeather=%s, weatherRank=%s\n",
                     envWeather, weather, weatherRank);
-            this.appendtoDebugLogFile(debugStr);
+            this.appendToDebugLogFile(debugStr);
         }
         return weatherRank;
+    }
+
+    final int MAX_RANK_RADIUS = 300;
+
+    /**
+     * Rank location.
+     * @param cursor
+     */
+    private double rankLocation(Cursor cursor, EnvironmentContext context) {
+        double lon = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.LOCATION_LON));
+        double lat = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.LOCATION_LAT));
+        Location location = new Location("");
+        location.setLongitude(lon);
+        location.setLatitude(lat);
+
+        Location envLocation = context.getLastLocation();
+        System.out.println(location + " " + envLocation);
+
+        // do not perform ranking when location info is missing!
+        if ((Double.isInfinite(lon) && Double.isInfinite(lat)) ||
+            (Double.isInfinite(envLocation.getLongitude()) && Double.isInfinite(envLocation.getLatitude()))) {
+            if (LOG_TO_FILE) {
+                this.appendToDebugLogFile("rankLocation: disabled\n");
+            }
+            return 0.0;
+        }
+
+        int distance = (int)location.distanceTo(envLocation); // in meters
+        double rank;
+        if (distance == 0 || distance < MAX_RANK_RADIUS) {
+            rank = 1.0;
+        }
+        else {
+            rank = 1.0/(double)distance; // todo smoother function?
+        }
+
+        if (LOG_TO_FILE){
+            String debugStr = String.format("rankLocation: envLon=%s, envLat=%s, lon=%s, lat=%s, locationRank=%s\n",
+                envLocation.getLongitude(), envLocation.getLatitude(),
+                   location.getLongitude(),    location.getLatitude(), rank);
+            this.appendToDebugLogFile(debugStr);
+        }
+        return rank;
     }
 
     /**
@@ -214,7 +247,7 @@ public class PlaylistRankingTask implements Runnable{
         if (LOG_TO_FILE) {
             String debugStr = String.format("rankTime(): start=%s, end=%s, current=%s, timeRank=%s\n",
                     new LocalTime(firstResume), new LocalTime(lastPause), new LocalTime(currentDatetime), timeRank);
-            this.appendtoDebugLogFile(debugStr);
+            this.appendToDebugLogFile(debugStr);
         }
         return timeRank;
     }
@@ -316,7 +349,7 @@ public class PlaylistRankingTask implements Runnable{
         if (LOG_TO_FILE) {
             String debugStr = String.format("computePlaytimeRatio(): playtime=%s, duration=%s, ratio=%s\n",
                     playtime, duration, ratio);
-            this.appendtoDebugLogFile(debugStr);
+            this.appendToDebugLogFile(debugStr);
         }
         return ratio;
     }
@@ -342,7 +375,7 @@ public class PlaylistRankingTask implements Runnable{
             if (LOG_TO_FILE) {
                 String debugStr = String.format("computeRealPlaytimeRatio(): switchTo=%s, switchFrom=%s, diff=%s, ratio=%s\n",
                     switchTo, switchFrom, diff, 0.0);
-                this.appendtoDebugLogFile(debugStr);
+                this.appendToDebugLogFile(debugStr);
             }
             return 0.0d;
         }
@@ -352,7 +385,7 @@ public class PlaylistRankingTask implements Runnable{
         if (LOG_TO_FILE) {
             String debugStr = String.format("computeRealPlaytimeRatio(): switchTo=%s, switchFrom=%s, diff=%s, ratio=%s\n",
                     switchTo, switchFrom, diff, ratio);
-            this.appendtoDebugLogFile(debugStr);
+            this.appendToDebugLogFile(debugStr);
         }
         return ratio;
     }
@@ -373,7 +406,7 @@ public class PlaylistRankingTask implements Runnable{
         double bias = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.BIAS));
         if (LOG_TO_FILE) {
             String debugStr = String.format("getBias: bias=%s", bias);
-            this.appendtoDebugLogFile(debugStr);
+            this.appendToDebugLogFile(debugStr);
         }
 
         return bias;
@@ -389,7 +422,8 @@ public class PlaylistRankingTask implements Runnable{
         FileWriter fileWriter = null;
         try {
             fileWriter = new FileWriter(file, false);
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             this.LOG_TO_FILE = false;
             Log.e("openDebugLogFile", "error opening logfile, disabling logging");
         }
@@ -406,10 +440,11 @@ public class PlaylistRankingTask implements Runnable{
         }
     }
 
-    private void appendtoDebugLogFile(String s) {
+    private void appendToDebugLogFile(String s) {
         try {
             this.logFileWriter.append(s);
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             Log.e("appendToDebugLogFile", "error appending to logfile");
         }
 

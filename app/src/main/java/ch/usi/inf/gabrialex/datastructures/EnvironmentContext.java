@@ -21,8 +21,8 @@ public class EnvironmentContext {
     public static DateTime DATETIME_DEFAULT_VALUE = new DateTime(new Date());
 
     static {
-        LOCATION_DEFAULT_VALUE.setLongitude(Double.NaN);
-        LOCATION_DEFAULT_VALUE.setLatitude(Double.NaN);
+        LOCATION_DEFAULT_VALUE.setLongitude(Double.NEGATIVE_INFINITY);
+        LOCATION_DEFAULT_VALUE.setLatitude(Double.NEGATIVE_INFINITY);
     }
 
     /**
