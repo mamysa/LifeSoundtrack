@@ -37,8 +37,16 @@ public class SettingsActivity extends AppCompatActivity {
         SeekBar importanceLocation = (SeekBar) findViewById(R.id.location_ranking_importance);
         importanceLocation.setOnSeekBarChangeListener(seekbarListener);
 
+        SeekBar importanceWeather = (SeekBar) findViewById(R.id.weather_ranking_importance);
+        importanceWeather.setOnSeekBarChangeListener(seekbarListener);
+
+        SeekBar importanceMood = (SeekBar) findViewById(R.id.mood_ranking_importance);
+        importanceMood.setOnSeekBarChangeListener(seekbarListener);
+
         this.doubleToSeekbar(importanceTime, RankWeightPreferences.IMPORTANCE_TIME, RankWeightPreferences.IMPORTANCE_MIN, RankWeightPreferences.IMPORTANCE_MAX);
         this.doubleToSeekbar(importanceLocation, RankWeightPreferences.IMPORTANCE_LOCATION, RankWeightPreferences.IMPORTANCE_MIN, RankWeightPreferences.IMPORTANCE_MAX);
+        this.doubleToSeekbar(importanceWeather, RankWeightPreferences.IMPORTANCE_WEATHER, RankWeightPreferences.IMPORTANCE_MIN, RankWeightPreferences.IMPORTANCE_MAX);
+        this.doubleToSeekbar(importanceMood, RankWeightPreferences.IMPORTANCE_MOOD, RankWeightPreferences.IMPORTANCE_MIN, RankWeightPreferences.IMPORTANCE_MAX);
     }
 
     /**
@@ -51,10 +59,13 @@ public class SettingsActivity extends AppCompatActivity {
         if (settingsChanged) {
             SeekBar importanceTime = (SeekBar)findViewById(R.id.time_ranking_importance);
             SeekBar importanceLocation = (SeekBar) findViewById(R.id.location_ranking_importance);
+            SeekBar importanceWeather = (SeekBar) findViewById(R.id.weather_ranking_importance);
+            SeekBar importanceMood = (SeekBar) findViewById(R.id.mood_ranking_importance);
 
             RankWeightPreferences.IMPORTANCE_TIME = this.seekbarToDouble(importanceTime, RankWeightPreferences.IMPORTANCE_MIN, RankWeightPreferences.IMPORTANCE_MAX);
             RankWeightPreferences.IMPORTANCE_LOCATION = this.seekbarToDouble(importanceLocation, RankWeightPreferences.IMPORTANCE_MIN, RankWeightPreferences.IMPORTANCE_MAX);
-
+            RankWeightPreferences.IMPORTANCE_WEATHER = this.seekbarToDouble(importanceWeather, RankWeightPreferences.IMPORTANCE_MIN, RankWeightPreferences.IMPORTANCE_MAX);
+            RankWeightPreferences.IMPORTANCE_MOOD = this.seekbarToDouble(importanceMood, RankWeightPreferences.IMPORTANCE_MIN, RankWeightPreferences.IMPORTANCE_MAX);
 
             RankWeightPreferences.writePreferences(this);
         }

@@ -22,6 +22,7 @@ public class RankWeightPreferences {
     public static double IMPORTANCE_TIME = 1.0;
     public static double IMPORTANCE_LOCATION = 1.0;
     public static double IMPORTANCE_WEATHER = 1.0;
+    public static double IMPORTANCE_MOOD = 1.0;
 
     private static final String WEIGHT_PREFS_FILENAME = "weight_prefs.txt";
 
@@ -33,6 +34,7 @@ public class RankWeightPreferences {
             IMPORTANCE_TIME = Double.parseDouble(reader.readLine().trim());
             IMPORTANCE_LOCATION = Double.parseDouble(reader.readLine().trim());
             IMPORTANCE_WEATHER = Double.parseDouble(reader.readLine().trim());
+            IMPORTANCE_MOOD = Double.parseDouble(reader.readLine().trim());
             reader.close();
         }
         catch (FileNotFoundException ex) {
@@ -51,6 +53,7 @@ public class RankWeightPreferences {
             fileWriter.write(IMPORTANCE_TIME + "\n");
             fileWriter.write(IMPORTANCE_LOCATION + "\n");
             fileWriter.write(IMPORTANCE_WEATHER + "\n");
+            fileWriter.write(IMPORTANCE_MOOD + "\n");
             fileWriter.close();
         }
         catch (IOException ex) {

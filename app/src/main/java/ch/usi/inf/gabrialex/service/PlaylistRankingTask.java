@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import ch.usi.inf.gabrialex.datastructures.EnvironmentContext;
 import ch.usi.inf.gabrialex.datastructures.Playlist;
+import ch.usi.inf.gabrialex.datastructures.RankWeightPreferences;
 import ch.usi.inf.gabrialex.db.DBHelper;
 import ch.usi.inf.gabrialex.db.DBTableAudio;
 import ch.usi.inf.gabrialex.db.dbRankableEntry;
@@ -119,14 +120,18 @@ public class PlaylistRankingTask implements Runnable{
 
         double playtimeRatio = this.computePlaytimeRatio(cursor);
         double realPlaytimeRatio = this.computeRealPlaytimeRatio(cursor);
-        entryRank += realPlaytimeRatio * rankTime(cursor, environmentContext);
-        entryRank += rankLocation(cursor, environmentContext);
-        entryRank += rankMood(cursor, environmentContext);
-        entryRank += rankWeather(cursor, environmentContext);
+        entryRank += realPlaytimeRatio * RankWeightPreferences.IMPORTANCE_TIME * rankTime(cursor, environmentContext);
+        entryRank += RankWeightPreferences.IMPORTANCE_LOCATION * rankLocation(cursor, environmentContext);
+        entryRank += RankWeightPreferences.IMPORTANCE_MOOD * rankMood(cursor, environmentContext);
+        entryRank += RankWeightPreferences.IMPORTANCE_WEATHER * rankWeather(cursor, environmentContext);
         entryRank = playtimeRatio * entryRank + getBias(cursor);
 
         if (LOG_TO_FILE) {
-            String debugStr = String.format("Final row rank: %s\n\n", entryRank);
+            String debugStr = String.format("Final row rank: %s, w1=%s, w2=%s, w3=%s, w4=%s\n\n", entryRank,
+                    RankWeightPreferences.IMPORTANCE_TIME,
+                    RankWeightPreferences.IMPORTANCE_LOCATION,
+                    RankWeightPreferences.IMPORTANCE_MOOD,
+                    RankWeightPreferences.IMPORTANCE_WEATHER);
             this.appendToDebugLogFile(debugStr);
         }
         return entryRank;

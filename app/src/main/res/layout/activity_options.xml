@@ -30,9 +30,37 @@
         android:id="@+id/location_ranking_importance"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"/>
+
+    <TextView
+        android:text="Weather ranking importance:"
+        android:textStyle="bold"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <SeekBar
+        android:id="@+id/weather_ranking_importance"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
+
+    <TextView
+        android:text="Mood ranking importance:"
+        android:textStyle="bold"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <SeekBar
+        android:id="@+id/mood_ranking_importance"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
