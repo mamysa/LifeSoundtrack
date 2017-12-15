@@ -26,6 +26,10 @@ public class Audio implements Comparable<Audio>, Parcelable {
     private double rank;
     private ArrayList<RankingReason> rankingReasons; // FIXME really hacky!
 
+    public ArrayList<RankingReason> getRankingReasons() {
+        return rankingReasons;
+    }
+
     public Audio(String data, String tracknum, String title, String album, String artist, int length, int id) {
         this.tracknum = tracknum;
         this.data = data;

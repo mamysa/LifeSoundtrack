@@ -49,6 +49,54 @@ public class RankingReason {
         this.totalRank = b;
     }
 
+    public EnvironmentContext getContext() {
+        return context;
+    }
+
+    public DateTime getStartTime() {
+        return startTime;
+    }
+
+    public DateTime getEndTime() {
+        return endTime;
+    }
+
+    public double getRealPlaytimeRatio() {
+        return realPlaytimeRatio;
+    }
+
+    public double getTimeRank() {
+        return timeRank;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public double getLocationRank() {
+        return locationRank;
+    }
+
+    public String getWeather() {
+        return weather;
+    }
+
+    public double getWeatherRank() {
+        return weatherRank;
+    }
+
+    public String getMood() {
+        return mood;
+    }
+
+    public double getMoodRank() {
+        return moodRank;
+    }
+
+    public double getPlaytimeRatio() {
+        return playtimeRatio;
+    }
+
     public void setEnvironmentContext(EnvironmentContext a) {
         this.context = a;
     }

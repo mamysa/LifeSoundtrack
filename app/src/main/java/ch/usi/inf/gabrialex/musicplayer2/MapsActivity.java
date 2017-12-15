@@ -11,6 +11,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 
 import ch.usi.inf.gabrialex.datastructures.MusicContext;
 import ch.usi.inf.gabrialex.datastructures.MusicContextManager;
+import ch.usi.inf.gabrialex.datastructures.Playlist;
+import ch.usi.inf.gabrialex.datastructures.RankingReason;
 import ch.usi.inf.gabrialex.db.DBHelper;
 import ch.usi.inf.gabrialex.db.DBTableAudio;
 import ch.usi.inf.gabrialex.db.dbRankableEntry;
@@ -59,10 +62,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Toast.makeText(this, "No Places Found", Toast.LENGTH_LONG).show();
             return;
         }
+        Audio song = Playlist.getInstance().findTrackById(songId);
+        ArrayList<Marker> markers = new ArrayList<Marker>();
+        for (RankingReason reason : song.getRankingReasons()) {
+            if (reason.isSuperImportant()){
+                LatLng latLon = new LatLng(reason.getLocation().getLatitude(), reason.getLocation().getLongitude());
+                markers.add(mMap.addMarker(new MarkerOptions().position(latLon).title("Place").icon(BitmapDescriptorFactory
+                        .defaultMarker(this.getMoodColour(reason.getMood())))));
+            }
+        }
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (Marker marker : markers) {
+            builder.include(marker.getPosition());
+        }
+        LatLngBounds bounds = builder.build();
+        int padding = 0; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        googleMap.animateCamera(cu);
 
 
 
-        doStuff(googleMap);
+        //doStuff(googleMap);
+    }
+
+    private float getMoodColour(String mood) {
+        if (mood!= null && mood.equals("happy")){
+            return BitmapDescriptorFactory.HUE_GREEN;
+        }
+        else if (mood!= null && mood.equals("neutral")) {
+            return BitmapDescriptorFactory.HUE_YELLOW;
+        }
+        else
+            return BitmapDescriptorFactory.HUE_RED;
     }
 
     private void doStuff(GoogleMap googleMap) {
