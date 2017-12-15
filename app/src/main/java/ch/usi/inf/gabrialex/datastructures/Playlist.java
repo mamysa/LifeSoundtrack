@@ -16,6 +16,7 @@ public class Playlist {
 
     /**
      * Get playlist instance.
+     *
      * @return
      */
     public static Playlist getInstance() {
@@ -38,6 +39,7 @@ public class Playlist {
 
     /**
      * Selects next track to play.
+     *
      * @return null when playlist is empty. null is also returned when there are no more songs left
      * in the playlist. Otherwise, pick the next song.
      */
@@ -61,6 +63,7 @@ public class Playlist {
 
     /**
      * Selects previous track to play.
+     *
      * @return null if playlist is empty, otherwise pick previous track.
      */
     public Audio getPrevious(Audio audio) {
@@ -75,7 +78,7 @@ public class Playlist {
 
         idx -= 1;
         if (idx < 0) {
-           return null;
+            return null;
         }
 
         return this.playlist.get(idx);
@@ -91,6 +94,7 @@ public class Playlist {
 
     /**
      * Add track to the playlist.
+     *
      * @param audio
      */
     public void addEntry(Audio audio) {
@@ -99,6 +103,7 @@ public class Playlist {
 
     /**
      * Returns actual array containing tracks. TODO maybe replace it with iterator?
+     *
      * @return
      */
     public ArrayList<Audio> getPlaylist() {
@@ -125,7 +130,11 @@ public class Playlist {
         });
     }
 
-    public void findTrack(Audio audio) {
-        throw new AssertionError("Implement me");
+    public Audio findTrackById(int id) {
+        for (Audio track : this.playlist) {
+            if (track.getId() == id)
+                return track;
+        }
+        return null;
     }
 }

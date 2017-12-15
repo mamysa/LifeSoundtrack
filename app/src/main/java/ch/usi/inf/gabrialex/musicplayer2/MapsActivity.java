@@ -28,11 +28,13 @@ import ch.usi.inf.gabrialex.service.Audio;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private int songId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        this.songId = getIntent().getIntExtra("songId", -1);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -52,19 +54,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        MusicContext musicContext = MusicContextManager.getInstance().getMusicContext();
-        if (musicContext == null || musicContext.getActiveMedia() == null)  {
+        //MusicContext musicContext = MusicContextManager.getInstance().getMusicContext();
+        if (songId ==-1)  {
             Toast.makeText(this, "No Places Found", Toast.LENGTH_LONG).show();
             return;
         }
 
-        int currentSongId = musicContext.getActiveMedia().getId();
+
+
+        doStuff(googleMap);
+    }
+
+    private void doStuff(GoogleMap googleMap) {
         DBHelper helper = DBHelper.getInstance(this);
-        Log.d("MAPS:", "SONG ID: " + currentSongId);
+        Log.d("MAPS:", "SONG ID: " + songId);
         String query = String.format(
                 " SELECT locationLon, locationLat, listeningDuration FROM %s WHERE %s == %s AND listeningDuration > 90;",
                 dbRankableEntry.TABLE_NAME,
-                dbRankableEntry.AUDIO_ID, currentSongId);
+                dbRankableEntry.AUDIO_ID, songId);
 
         Cursor cursor = helper.getReadableDatabase().rawQuery(query, null);
 

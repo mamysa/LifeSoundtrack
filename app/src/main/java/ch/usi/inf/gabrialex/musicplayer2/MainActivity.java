@@ -21,6 +21,8 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import ch.usi.inf.gabrialex.datastructures.MusicContext;
+import ch.usi.inf.gabrialex.datastructures.MusicContextManager;
 import ch.usi.inf.gabrialex.datastructures.Playlist;
 import ch.usi.inf.gabrialex.protocol.MediaPlayerState;
 import ch.usi.inf.gabrialex.protocol.Protocol;
@@ -332,6 +334,9 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
         }
         if (id == R.id.trigger_song_position_activity) {
             Intent intent = new Intent(this, MapsActivity.class);
+            MusicContext musicContext = MusicContextManager.getInstance().getMusicContext();
+            int currentSongId = musicContext.getActiveMedia().getId();
+            intent.putExtra("songId", currentSongId);
             startActivity(intent);
         }
         if (id == R.id.trigger_playlist_generation) {
