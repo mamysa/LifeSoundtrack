@@ -4,9 +4,35 @@
     android:layout_height="match_parent">
 
 
-    <Button
-        android:layout_width="match_parent"
-        android:text="This is my options panel!"
+    <TextView
+        android:text="Time ranking importance:"
+        android:textStyle="bold"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
+
+    <SeekBar
+        android:id="@+id/time_ranking_importance"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
+
+    <TextView
+        android:text="Location ranking importance:"
+        android:textStyle="bold"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <SeekBar
+        android:id="@+id/location_ranking_importance"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
 
 </LinearLayout>
