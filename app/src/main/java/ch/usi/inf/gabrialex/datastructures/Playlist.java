@@ -124,4 +124,8 @@ public class Playlist {
             }
         });
     }
+
+    public void findTrack(Audio audio) {
+        throw new AssertionError("Implement me");
+    }
 }

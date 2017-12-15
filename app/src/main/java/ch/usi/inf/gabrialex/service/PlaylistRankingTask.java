@@ -16,6 +16,7 @@ import java.io.IOException;
 import ch.usi.inf.gabrialex.datastructures.EnvironmentContext;
 import ch.usi.inf.gabrialex.datastructures.Playlist;
 import ch.usi.inf.gabrialex.datastructures.RankWeightPreferences;
+import ch.usi.inf.gabrialex.datastructures.RankingReason;
 import ch.usi.inf.gabrialex.db.DBHelper;
 import ch.usi.inf.gabrialex.db.DBTableAudio;
 import ch.usi.inf.gabrialex.db.dbRankableEntry;
@@ -71,6 +72,8 @@ public class PlaylistRankingTask implements Runnable{
                 Audio audio = null;
                 double rank = 0.0d;
                 while (!cursor.isAfterLast()) {
+                    RankingReason reason = new RankingReason();
+                    reason.setEnvironmentContext(envContext);
                     String a = cursor.getString(cursor.getColumnIndex(DBTableAudio.DATA));
                     String b = cursor.getString(cursor.getColumnIndex(DBTableAudio.TRACK));
                     String c = cursor.getString(cursor.getColumnIndex(DBTableAudio.TITLE));
@@ -89,7 +92,11 @@ public class PlaylistRankingTask implements Runnable{
                         audio = new Audio(a,b,c,d,e,Integer.parseInt(f),(int)g);
                     }
 
-                    rank += this.rank(cursor, envContext);
+                    rank += this.rank(cursor, envContext, reason);
+                    if (reason.isSuperImportant()) {
+                        audio.addReason(reason);
+                    }
+
                     cursor.moveToNext();
                 }
                 cursor.close();
@@ -107,9 +114,8 @@ public class PlaylistRankingTask implements Runnable{
         }
     }
 
-    private double rank(Cursor cursor, EnvironmentContext environmentContext) {
+    private double rank(Cursor cursor, EnvironmentContext environmentContext, RankingReason reason) {
         double entryRank = 0.0;
-
 
         String a = cursor.getString(cursor.getColumnIndex(DBTableAudio.DATA));
 
@@ -120,10 +126,10 @@ public class PlaylistRankingTask implements Runnable{
 
         double playtimeRatio = this.computePlaytimeRatio(cursor);
         double realPlaytimeRatio = this.computeRealPlaytimeRatio(cursor);
-        entryRank += realPlaytimeRatio * RankWeightPreferences.IMPORTANCE_TIME * rankTime(cursor, environmentContext);
-        entryRank += RankWeightPreferences.IMPORTANCE_LOCATION * rankLocation(cursor, environmentContext);
-        entryRank += RankWeightPreferences.IMPORTANCE_MOOD * rankMood(cursor, environmentContext);
-        entryRank += RankWeightPreferences.IMPORTANCE_WEATHER * rankWeather(cursor, environmentContext);
+        entryRank += realPlaytimeRatio * RankWeightPreferences.IMPORTANCE_TIME * rankTime(cursor, environmentContext, reason);
+        entryRank += RankWeightPreferences.IMPORTANCE_LOCATION * rankLocation(cursor, environmentContext, reason);
+        entryRank += RankWeightPreferences.IMPORTANCE_MOOD * rankMood(cursor, environmentContext, reason);
+        entryRank += RankWeightPreferences.IMPORTANCE_WEATHER * rankWeather(cursor, environmentContext, reason);
         entryRank = playtimeRatio * entryRank + getBias(cursor);
 
         if (LOG_TO_FILE) {
@@ -145,7 +151,7 @@ public class PlaylistRankingTask implements Runnable{
      * @param environmentContext
      * @return
      */
-    private double rankMood(Cursor cursor, EnvironmentContext environmentContext) {
+    private double rankMood(Cursor cursor, EnvironmentContext environmentContext, RankingReason reason) {
         String mood = cursor.getString(cursor.getColumnIndex(dbRankableEntry.MOOD));
         String envMood = environmentContext.getMood();
         double moodRank;
@@ -156,6 +162,7 @@ public class PlaylistRankingTask implements Runnable{
             moodRank = 0.0;
         }
 
+        reason.setMoodInfo(mood, moodRank);
         if (LOG_TO_FILE) {
             String debugStr = String.format("rankMood(): environmentMood=%s, entryMood=%s, timeRank=%s\n",
                     envMood, mood, moodRank);
@@ -170,7 +177,7 @@ public class PlaylistRankingTask implements Runnable{
      * @param environmentContext
      * @return
      */
-    private double rankWeather(Cursor cursor, EnvironmentContext environmentContext) {
+    private double rankWeather(Cursor cursor, EnvironmentContext environmentContext, RankingReason reason) {
         String weather = cursor.getString(cursor.getColumnIndex(dbRankableEntry.WEATHER));
         String envWeather = environmentContext.getWeather();
         double weatherRank;
@@ -181,6 +188,7 @@ public class PlaylistRankingTask implements Runnable{
             weatherRank = 0.0;
         }
 
+        reason.setWeatherInfo(weather, weatherRank);
         if (LOG_TO_FILE) {
             String debugStr = String.format("rankWeather(): environmentWeather=%s, entryWeather=%s, weatherRank=%s\n",
                     envWeather, weather, weatherRank);
@@ -195,7 +203,8 @@ public class PlaylistRankingTask implements Runnable{
      * Rank location.
      * @param cursor
      */
-    private double rankLocation(Cursor cursor, EnvironmentContext context) {
+    private double rankLocation(Cursor cursor, EnvironmentContext context, RankingReason reason) {
+        final double eps = 0.5;
         double lon = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.LOCATION_LON));
         double lat = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.LOCATION_LAT));
         Location location = new Location("");
@@ -207,6 +216,7 @@ public class PlaylistRankingTask implements Runnable{
         // do not perform ranking when location info is missing!
         if ((Double.isInfinite(lon) && Double.isInfinite(lat)) ||
             (Double.isInfinite(envLocation.getLongitude()) && Double.isInfinite(envLocation.getLatitude()))) {
+            reason.setLocationInfo(location, 0.0);
             if (LOG_TO_FILE) {
                 this.appendToDebugLogFile("rankLocation: disabled\n");
             }
@@ -222,10 +232,11 @@ public class PlaylistRankingTask implements Runnable{
             rank = 1.0/(double)distance; // todo smoother function?
         }
 
+        reason.setLocationInfo(location, rank);
         if (LOG_TO_FILE){
-            String debugStr = String.format("rankLocation: envLon=%s, envLat=%s, lon=%s, lat=%s, locationRank=%s\n",
+            String debugStr = String.format("rankLocation: envLon=%s, envLat=%s, lon=%s, lat=%s, dist=%s, locationRank=%s\n",
                 envLocation.getLongitude(), envLocation.getLatitude(),
-                   location.getLongitude(),    location.getLatitude(), rank);
+                   location.getLongitude(),    location.getLatitude(), distance, rank);
             this.appendToDebugLogFile(debugStr);
         }
         return rank;
@@ -237,7 +248,7 @@ public class PlaylistRankingTask implements Runnable{
      * @param environmentContext
      * @return
      */
-    private double rankTime(Cursor cursor, EnvironmentContext environmentContext) {
+    private double rankTime(Cursor cursor, EnvironmentContext environmentContext, RankingReason reason) {
         String firstResumeStr = cursor.getString(cursor.getColumnIndex(dbRankableEntry.DATE_FIRST_RESUME));
         String lastPauseStr = cursor.getString(cursor.getColumnIndex(dbRankableEntry.DATE_LAST_PAUSE));
 
@@ -247,7 +258,7 @@ public class PlaylistRankingTask implements Runnable{
         double timeRank = this.rankTime(new LocalTime(firstResume),
                                         new LocalTime(lastPause),
                                         new LocalTime(currentDatetime));
-
+        reason.setTimeInfo(firstResume, lastPause, timeRank);
         if (LOG_TO_FILE) {
             String debugStr = String.format("rankTime(): start=%s, end=%s, current=%s, timeRank=%s\n",
                     new LocalTime(firstResume), new LocalTime(lastPause), new LocalTime(currentDatetime), timeRank);
@@ -406,6 +417,11 @@ public class PlaylistRankingTask implements Runnable{
         return (days == 0) ? 1.0 : 1.0/(double)days;
     }
 
+    /**
+     * Read initial bias.
+     * @param cursor
+     * @return
+     */
     private double getBias(Cursor cursor) {
         double bias = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.BIAS));
         if (LOG_TO_FILE) {
@@ -415,7 +431,6 @@ public class PlaylistRankingTask implements Runnable{
 
         return bias;
     }
-
 
     /**
      * Helper method for opening log file. If opening log file fails, disable logging.

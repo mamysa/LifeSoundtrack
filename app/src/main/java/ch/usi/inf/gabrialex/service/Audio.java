@@ -4,7 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+
+import ch.usi.inf.gabrialex.datastructures.RankingReason;
 
 /**
  * Created by gabriele on 16.11.17.
@@ -21,6 +24,7 @@ public class Audio implements Comparable<Audio>, Parcelable {
     private int length;
     private int id;
     private double rank;
+    private ArrayList<RankingReason> rankingReasons; // FIXME really hacky!
 
     public Audio(String data, String tracknum, String title, String album, String artist, int length, int id) {
         this.tracknum = tracknum;
@@ -31,6 +35,7 @@ public class Audio implements Comparable<Audio>, Parcelable {
         this.length = length;
         this.id = id;
         this.rank = 0.0d;
+        this.rankingReasons = new ArrayList<>();
     }
 
     public Audio(Parcel p) {
@@ -42,6 +47,7 @@ public class Audio implements Comparable<Audio>, Parcelable {
         this.length = p.readInt();
         this.id = p.readInt();
         this.rank = p.readDouble();
+        this.rankingReasons = new ArrayList<>();
     }
 
     public String getTracknum() {
@@ -74,6 +80,10 @@ public class Audio implements Comparable<Audio>, Parcelable {
 
     public void setRank(double rank) {
         this.rank = rank;
+    }
+
+    public void addReason(RankingReason reason) {
+        this.rankingReasons.add(reason);
     }
 
     @Override
