@@ -4,6 +4,7 @@
 
     <item
         android:id="@+id/trigger_options_activity"
+        android:icon="@drawable/ic_settings"
         android:title="Options"
         app:showAsAction="always" />
     <item
@@ -12,11 +13,13 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/trigger_playlist_generation"
+        android:icon="@drawable/ic_refresh_icon"
         android:title="Generate"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/trigger_change_mood"
+        android:icon="@drawable/ic_smile_white"
         android:title="Change Mood"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
 </menu>

@@ -68,7 +68,7 @@ public class RealSplashActivity extends AppCompatActivity implements LibraryUpda
                 RealSplashActivity.this.startActivity(moodIntent);
                 RealSplashActivity.this.finish();
             }
-        }, 2000);
+        }, 1500);
         Looper.loop();
     }
 

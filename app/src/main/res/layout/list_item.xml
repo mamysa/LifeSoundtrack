@@ -54,7 +54,7 @@
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_alignParentRight="true"
-        android:background="@drawable/ic_info"
+        android:background="@drawable/ic_info2"
         android:layout_centerVertical="true"/>
 
 </RelativeLayout>
