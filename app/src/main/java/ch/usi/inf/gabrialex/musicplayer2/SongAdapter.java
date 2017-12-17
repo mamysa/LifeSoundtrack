@@ -7,12 +7,17 @@ package ch.usi.inf.gabrialex.musicplayer2;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import ch.usi.inf.gabrialex.datastructures.EnvironmentContext;
+import ch.usi.inf.gabrialex.datastructures.MusicContext;
+import ch.usi.inf.gabrialex.datastructures.MusicContextManager;
 import ch.usi.inf.gabrialex.service.Audio;
 
 public class SongAdapter extends ArrayAdapter<Audio> {
@@ -27,6 +32,7 @@ public class SongAdapter extends ArrayAdapter<Audio> {
     public SongAdapter(Context context, int textViewResourceId, ArrayList<Audio> objects) {
         super(context, textViewResourceId, objects);
         this.objects = objects;
+
     }
 
     /*
@@ -52,7 +58,7 @@ public class SongAdapter extends ArrayAdapter<Audio> {
 		 *
 		 * Therefore, i refers to the current Item object.
 		 */
-        Audio i = objects.get(position);
+        final Audio i = objects.get(position);
 
         if (i != null) {
 
@@ -62,7 +68,16 @@ public class SongAdapter extends ArrayAdapter<Audio> {
             TextView tt = (TextView) v.findViewById(R.id.toptext);
             TextView ttd = (TextView) v.findViewById(R.id.toptextdata);
             TextView rank = (TextView) v.findViewById(R.id.ranktext);
-
+            final ImageButton info = (ImageButton) v.findViewById(R.id.getRankInfoButton);
+            info.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getContext(), MapsActivity.class);
+                    int songId = i.getId();
+                    intent.putExtra("songId", songId);
+                    getContext().startActivity(intent);
+                }
+            });
 
             // check to see if each individual textview is null.
             // if not, assign some text!

@@ -14,28 +14,36 @@ public class JSONWeatherParser {
     public static Weather getWeather(String data) throws JSONException  {
         Weather weather = new Weather();
 
-        // We create out JSONObject from the data
-        JSONObject jObj = new JSONObject(data);
+        if (data != null) {
+            // We create out JSONObject from the data
+            JSONObject jObj = new JSONObject(data);
 
 
-        // We get weather info (This is an array)
-        JSONArray jArr = jObj.getJSONArray("weather");
+            // We get weather info (This is an array)
+            JSONArray jArr = jObj.getJSONArray("weather");
 
-        // We use only the first value
-        JSONObject JSONWeather = jArr.getJSONObject(0);
-        weather.currentCondition.setWeatherId(getInt("id", JSONWeather));
-        weather.currentCondition.setDescr(getString("description", JSONWeather));
-        weather.currentCondition.setCondition(getString("main", JSONWeather));
+            // We use only the first value
+            JSONObject JSONWeather = jArr.getJSONObject(0);
+            weather.currentCondition.setWeatherId(getInt("id", JSONWeather));
+            weather.currentCondition.setDescr(getString("description", JSONWeather));
+            weather.currentCondition.setCondition(getString("main", JSONWeather));
 
-        JSONObject mainObj = getObject("main", jObj);
-        weather.currentCondition.setHumidity(getInt("humidity", mainObj));
-        weather.currentCondition.setPressure(getInt("pressure", mainObj));
-        weather.temperature.setMaxTemp(getFloat("temp_max", mainObj));
-        weather.temperature.setMinTemp(getFloat("temp_min", mainObj));
-        weather.temperature.setTemp(getFloat("temp", mainObj));
+            JSONObject mainObj = getObject("main", jObj);
+            weather.currentCondition.setHumidity(getInt("humidity", mainObj));
+            weather.currentCondition.setPressure(getInt("pressure", mainObj));
+            weather.temperature.setMaxTemp(getFloat("temp_max", mainObj));
+            weather.temperature.setMinTemp(getFloat("temp_min", mainObj));
+            weather.temperature.setTemp(getFloat("temp", mainObj));
 
 
-        return weather;
+            return weather;
+        }
+        else {
+            weather.currentCondition.setWeatherId(0);
+            weather.currentCondition.setDescr("Unknown");
+            weather.currentCondition.setCondition("Unknown");
+            return weather;
+        }
     }
 
 
