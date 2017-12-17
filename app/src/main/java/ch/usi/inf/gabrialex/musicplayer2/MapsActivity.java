@@ -1,9 +1,15 @@
 package ch.usi.inf.gabrialex.musicplayer2;
 
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -28,7 +34,7 @@ import ch.usi.inf.gabrialex.db.DBTableAudio;
 import ch.usi.inf.gabrialex.db.dbRankableEntry;
 import ch.usi.inf.gabrialex.service.Audio;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,GoogleMap.InfoWindowAdapter {
 
     private GoogleMap mMap;
     private int songId;
@@ -67,8 +73,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (RankingReason reason : song.getRankingReasons()) {
             if (reason.isSuperImportant()){
                 LatLng latLon = new LatLng(reason.getLocation().getLatitude(), reason.getLocation().getLongitude());
+                String info = reason.getInfo();
                 markers.add(mMap.addMarker(new MarkerOptions().position(latLon).title("Ranking Info").icon(BitmapDescriptorFactory
-                        .defaultMarker(this.getMoodColour(reason.getMood())))));
+                        .defaultMarker(this.getMoodColour(reason.getMood()))).snippet(info)));
             }
         }
         if(!markers.isEmpty()) {
@@ -78,6 +85,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             LatLngBounds bounds = builder.build();
             int padding = 0; // offset from edges of the map in pixels
+            mMap.setInfoWindowAdapter(this);
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
             googleMap.animateCamera(cu);
         }
@@ -149,5 +157,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(this, "No Places Found", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        LinearLayout info = new LinearLayout(getBaseContext());
+        info.setOrientation(LinearLayout.VERTICAL);
+
+        TextView title = new TextView(getBaseContext());
+        title.setTextColor(Color.BLACK);
+        title.setGravity(Gravity.CENTER);
+        title.setTypeface(null, Typeface.BOLD);
+        title.setText(marker.getTitle());
+
+        TextView snippet = new TextView(getBaseContext());
+        snippet.setTextColor(Color.GRAY);
+        snippet.setText(marker.getSnippet());
+
+        info.addView(title);
+        info.addView(snippet);
+
+        return info;
     }
 }

@@ -3,6 +3,12 @@ package ch.usi.inf.gabrialex.datastructures;
 import android.location.Location;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 
 /**
  * Created by alex on 15.12.17.
@@ -114,4 +120,22 @@ public class RankingReason {
     public double getTotalRank() {
         return this.totalRank;
     }
+
+    public String getInfo() {
+        String s = "";
+        s += "Start Time:\t" + startTime +"\n";
+        s += "End Time:\t" + endTime +"\n";
+        s += "PlayTime Ratio:\t" + realPlaytimeRatio +"\n";
+        s += "Weather:\t" + weather +"\n";
+        s += "Mood:\t" + mood +"\n";
+
+        s += "Time Rank:\t" + timeRank +"\n";
+        s += "Location Rank:\t" + locationRank +"\n";
+        s += "Weather Rank:\t" + weatherRank +"\n";
+        s += "Mood Rank:\t" + moodRank +"\n";
+        s += "Total Rank:\t" + totalRank +"\n";
+
+        return s;
+    }
+
 }
