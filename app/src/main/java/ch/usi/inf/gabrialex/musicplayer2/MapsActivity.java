@@ -68,6 +68,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Toast.makeText(this, "No Relevant Information Found", Toast.LENGTH_LONG).show();
             return;
         }
+        else {
+            fillMap(googleMap);
+        }
+
+    }
+
+    private void fillMap(GoogleMap googleMap) {
         Audio song = Playlist.getInstance().findTrackById(songId);
         ArrayList<Marker> markers = new ArrayList<Marker>();
         for (RankingReason reason : song.getRankingReasons()) {
@@ -97,8 +104,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Toast.makeText(this, "No Relevant Information Found", Toast.LENGTH_LONG).show();
             return;
         }
-
-
     }
 
     private float getMoodColour(String mood) {
@@ -116,52 +121,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    /* OLD METHOD TO CREATE THE MAP, TO BE DROPPED*/
-    private void doStuff(GoogleMap googleMap) {
-        DBHelper helper = DBHelper.getInstance(this);
-        Log.d("MAPS:", "SONG ID: " + songId);
-        String query = String.format(
-                " SELECT locationLon, locationLat, listeningDuration FROM %s WHERE %s == %s AND listeningDuration > 90;",
-                dbRankableEntry.TABLE_NAME,
-                dbRankableEntry.AUDIO_ID, songId);
 
-        Cursor cursor = helper.getReadableDatabase().rawQuery(query, null);
-
-        ArrayList<String> lat = new ArrayList<String>();
-        ArrayList<String> lon = new ArrayList<String>();
-        if (cursor != null) {
-            Log.d("MAPS:", "CURSOR NOT EMPTY");
-            cursor.moveToFirst();
-            while (cursor != null && !cursor.isAfterLast()) {
-                Log.d("MAPS:", "CURSOR LIST DUR: " + cursor.getString(cursor.getColumnIndex(dbRankableEntry.LISTENING_DURATION)));
-                lat.add(cursor.getString(cursor.getColumnIndex(dbRankableEntry.LOCATION_LAT)));
-                lon.add(cursor.getString(cursor.getColumnIndex(dbRankableEntry.LOCATION_LON)));
-
-                cursor.moveToNext();
-            }
-            if (!lat.isEmpty()){
-                ArrayList<Marker> markers = new ArrayList<Marker>();
-                for (int i=0; i<lat.size(); i++) {
-                    if (lat.get(i)!= null && lon.get(i)!= null){
-                        LatLng latLon = new LatLng(Double.valueOf(lat.get(i)), Double.valueOf(lon.get(i)));
-                        markers.add(mMap.addMarker(new MarkerOptions().position(latLon).title("Place "+ i)));
-                        //mMap.moveCamera(CameraUpdateFactory.newLatLng());
-                    }
-                }
-                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                for (Marker marker : markers) {
-                    builder.include(marker.getPosition());
-                }
-                LatLngBounds bounds = builder.build();
-                int padding = 0; // offset from edges of the map in pixels
-                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-                googleMap.animateCamera(cu);
-            }
-            else {
-                Toast.makeText(this, "No Places Found", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
 
     @Override
     public View getInfoWindow(Marker marker) {
