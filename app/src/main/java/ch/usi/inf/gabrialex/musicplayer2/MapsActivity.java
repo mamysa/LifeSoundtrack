@@ -84,9 +84,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 builder.include(marker.getPosition());
             }
             LatLngBounds bounds = builder.build();
-            int padding = 0; // offset from edges of the map in pixels
             mMap.setInfoWindowAdapter(this);
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            int width = getResources().getDisplayMetrics().widthPixels;
+            int height = getResources().getDisplayMetrics().heightPixels;
+            int padding = (int) (width * 0.12); // offset from edges of the map 12% of screen
+
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
+
             googleMap.animateCamera(cu);
         }
         else  {
