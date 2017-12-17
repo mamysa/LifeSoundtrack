@@ -38,14 +38,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private int songId;
-    private double totalRank;
+    private TextView header;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         this.songId = getIntent().getIntExtra("songId", -1);
-        this.totalRank = getIntent().getDoubleExtra("totalRank", 0.0);
+        this.header = (TextView) findViewById(R.id.mapTotalTextView);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -65,7 +65,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        //MusicContext musicContext = MusicContextManager.getInstance().getMusicContext();
         if (songId ==-1)  {
             Toast.makeText(this, "No Relevant Information Found", Toast.LENGTH_LONG).show();
             return;
@@ -78,10 +77,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void fillMap(GoogleMap googleMap) {
         Audio song = Playlist.getInstance().findTrackById(songId);
+        this.header.setText(song.getTitle() + "\nTotal Rank: " + song.getRank());
         ArrayList<Marker> markers = new ArrayList<Marker>();
         for (RankingReason reason : song.getRankingReasons()) {
             if (reason.isSuperImportant()){
-                reason.setTotalRank(totalRank);
                 LatLng latLon = new LatLng(reason.getLocation().getLatitude(), reason.getLocation().getLongitude());
                 String info = reason.getInfo();
                 markers.add(mMap.addMarker(new MarkerOptions().position(latLon).title("Ranking Info").icon(BitmapDescriptorFactory

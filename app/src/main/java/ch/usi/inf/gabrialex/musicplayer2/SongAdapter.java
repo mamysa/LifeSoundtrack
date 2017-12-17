@@ -75,7 +75,7 @@ public class SongAdapter extends ArrayAdapter<Audio> {
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), MapsActivity.class);
                     intent.putExtra("songId", i.getId());
-                    intent.putExtra("totalRank", i.getRank());
+                    //intent.putExtra("totalRank", i.getRank());
                     getContext().startActivity(intent);
                 }
             });

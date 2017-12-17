@@ -132,8 +132,7 @@ public class RankingReason {
         s += "Time Rank:\t" + timeRank +"\n";
         s += "Location Rank:\t" + locationRank +"\n";
         s += "Weather Rank:\t" + weatherRank +"\n";
-        s += "Mood Rank:\t" + moodRank +"\n";
-        s += "Total Rank:\t" + totalRank +"\n";
+        s += "Mood Rank:\t" + moodRank;
 
         return s;
     }
