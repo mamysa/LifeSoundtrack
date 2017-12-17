@@ -110,7 +110,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private float getMoodColour(String mood) {
         if (mood == null){
-            return BitmapDescriptorFactory.HUE_CYAN;
+            return BitmapDescriptorFactory.HUE_RED;
         }
         if (mood.equals("happy")){
             return BitmapDescriptorFactory.HUE_GREEN;
@@ -118,8 +118,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         else if (mood.equals("neutral")) {
             return BitmapDescriptorFactory.HUE_YELLOW;
         }
-        else
-            return BitmapDescriptorFactory.HUE_RED;
+        else //mood.equals("sad")
+            return BitmapDescriptorFactory.HUE_BLUE;
     }
 
 
