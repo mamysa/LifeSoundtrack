@@ -33,14 +33,7 @@
         android:singleLine="true"
         android:ellipsize="marquee"
         />
-    <ImageButton
-        android:id="@+id/getRankInfoButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_weight="1"
-        android:background="@drawable/ic_smile"
-        android:layout_alignParentRight="true"
-        />
+
     <TextView
         android:id="@+id/ranktext"
 
@@ -55,5 +48,12 @@
         android:textSize="10sp"
         android:textColor="#c20632"
         android:textStyle="bold" />
+
+    <ImageButton
+        android:id="@+id/getRankInfoButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/ic_smile" />
 
 </RelativeLayout>

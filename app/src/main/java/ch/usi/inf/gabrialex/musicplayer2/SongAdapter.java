@@ -69,6 +69,7 @@ public class SongAdapter extends ArrayAdapter<Audio> {
             TextView ttd = (TextView) v.findViewById(R.id.toptextdata);
             TextView rank = (TextView) v.findViewById(R.id.ranktext);
             final ImageButton info = (ImageButton) v.findViewById(R.id.getRankInfoButton);
+            info.setFocusable(false);
             info.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
