@@ -339,6 +339,10 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
             intent.putExtra("songId", currentSongId);
             startActivity(intent);
         }
+        if (id == R.id.trigger_change_mood) {
+            Intent intent = new Intent(this, MoodActivity.class);
+            startActivity(intent);
+        }
         if (id == R.id.trigger_playlist_generation) {
             this.onRequestPlaylistListing();
         }

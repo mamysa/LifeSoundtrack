@@ -18,4 +18,9 @@
         android:id="@+id/trigger_song_position_activity"
         android:title="Song Places"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/trigger_change_mood"
+        android:title="Change Mood"
+        app:showAsAction="never" />
 </menu>
