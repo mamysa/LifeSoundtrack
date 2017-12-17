@@ -102,6 +102,12 @@ public class RankingReason {
     }
 
     public boolean isSuperImportant() {
+        if((location.getLongitude()==0&&location.getLatitude()==0)|| location== null){
+            return false;
+        }
+        else if(startTime == null || endTime == null || mood==null ||weather==null){
+            return false;
+        }
         return true;
     }
 

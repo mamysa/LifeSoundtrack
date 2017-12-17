@@ -59,7 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         //MusicContext musicContext = MusicContextManager.getInstance().getMusicContext();
         if (songId ==-1)  {
-            Toast.makeText(this, "No Places Found", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No Relevant Information Found", Toast.LENGTH_LONG).show();
             return;
         }
         Audio song = Playlist.getInstance().findTrackById(songId);
@@ -67,35 +67,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (RankingReason reason : song.getRankingReasons()) {
             if (reason.isSuperImportant()){
                 LatLng latLon = new LatLng(reason.getLocation().getLatitude(), reason.getLocation().getLongitude());
-                markers.add(mMap.addMarker(new MarkerOptions().position(latLon).title("Place").icon(BitmapDescriptorFactory
+                markers.add(mMap.addMarker(new MarkerOptions().position(latLon).title("Ranking Info").icon(BitmapDescriptorFactory
                         .defaultMarker(this.getMoodColour(reason.getMood())))));
             }
         }
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for (Marker marker : markers) {
-            builder.include(marker.getPosition());
+        if(!markers.isEmpty()) {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (Marker marker : markers) {
+                builder.include(marker.getPosition());
+            }
+            LatLngBounds bounds = builder.build();
+            int padding = 0; // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            googleMap.animateCamera(cu);
         }
-        LatLngBounds bounds = builder.build();
-        int padding = 0; // offset from edges of the map in pixels
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-        googleMap.animateCamera(cu);
+        else  {
+            Toast.makeText(this, "No Relevant Information Found", Toast.LENGTH_LONG).show();
+            return;
+        }
 
 
-
-        //doStuff(googleMap);
     }
 
     private float getMoodColour(String mood) {
-        if (mood!= null && mood.equals("happy")){
+        if (mood == null){
+            return BitmapDescriptorFactory.HUE_CYAN;
+        }
+        if (mood.equals("happy")){
             return BitmapDescriptorFactory.HUE_GREEN;
         }
-        else if (mood!= null && mood.equals("neutral")) {
+        else if (mood.equals("neutral")) {
             return BitmapDescriptorFactory.HUE_YELLOW;
         }
         else
             return BitmapDescriptorFactory.HUE_RED;
     }
 
+
+    /* OLD METHOD TO CREATE THE MAP, TO BE DROPPED*/
     private void doStuff(GoogleMap googleMap) {
         DBHelper helper = DBHelper.getInstance(this);
         Log.d("MAPS:", "SONG ID: " + songId);
