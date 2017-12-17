@@ -38,12 +38,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private int songId;
+    private double totalRank;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         this.songId = getIntent().getIntExtra("songId", -1);
+        this.totalRank = getIntent().getDoubleExtra("totalRank", 0.0);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -79,6 +81,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ArrayList<Marker> markers = new ArrayList<Marker>();
         for (RankingReason reason : song.getRankingReasons()) {
             if (reason.isSuperImportant()){
+                reason.setTotalRank(totalRank);
                 LatLng latLon = new LatLng(reason.getLocation().getLatitude(), reason.getLocation().getLongitude());
                 String info = reason.getInfo();
                 markers.add(mMap.addMarker(new MarkerOptions().position(latLon).title("Ranking Info").icon(BitmapDescriptorFactory

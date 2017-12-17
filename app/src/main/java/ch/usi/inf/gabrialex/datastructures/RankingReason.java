@@ -8,8 +8,6 @@ import org.joda.time.format.DateTimeFormatter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
-
 /**
  * Created by alex on 15.12.17.
  */
@@ -54,7 +52,9 @@ public class RankingReason {
         this.playtimeRatio = a;
         this.totalRank = b;
     }
-
+    public void setTotalRank(double a) {
+        this.totalRank = a;
+    }
     public EnvironmentContext getContext() {
         return context;
     }

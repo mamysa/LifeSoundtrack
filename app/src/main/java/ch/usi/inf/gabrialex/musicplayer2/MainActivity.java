@@ -332,13 +332,6 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
             Intent intent = new Intent(this, DisplayRankLogActivity.class);
             startActivity(intent);
         }
-        if (id == R.id.trigger_song_position_activity) {
-            Intent intent = new Intent(this, MapsActivity.class);
-            MusicContext musicContext = MusicContextManager.getInstance().getMusicContext();
-            int currentSongId = musicContext.getActiveMedia().getId();
-            intent.putExtra("songId", currentSongId);
-            startActivity(intent);
-        }
         if (id == R.id.trigger_change_mood) {
             Intent intent = new Intent(this, MoodActivity.class);
             startActivity(intent);
