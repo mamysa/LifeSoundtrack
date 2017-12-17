@@ -24,7 +24,7 @@
         android:id="@+id/toptextdata"
 
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="35dp"
 
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
@@ -54,6 +54,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_alignParentRight="true"
-        android:background="@drawable/ic_info" />
+        android:background="@drawable/ic_info"
+        android:layout_centerVertical="true"/>
 
 </RelativeLayout>
