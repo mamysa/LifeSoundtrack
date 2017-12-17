@@ -67,7 +67,6 @@ public class SongAdapter extends ArrayAdapter<Audio> {
 
             TextView tt = (TextView) v.findViewById(R.id.toptext);
             TextView ttd = (TextView) v.findViewById(R.id.toptextdata);
-            TextView rank = (TextView) v.findViewById(R.id.ranktext);
             final ImageButton info = (ImageButton) v.findViewById(R.id.getRankInfoButton);
             info.setFocusable(false);
             info.setOnClickListener(new View.OnClickListener() {
@@ -88,9 +87,6 @@ public class SongAdapter extends ArrayAdapter<Audio> {
             if (ttd != null){
                 ttd.setText(i.getArtist() + " - " + i.getAlbum());
             }
-
-            rank.setText("" + i.getRank());
-
         }
 
         // the view must be returned to our activity

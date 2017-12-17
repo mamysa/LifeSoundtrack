@@ -7,10 +7,7 @@
         android:icon="@drawable/ic_settings"
         android:title="Options"
         app:showAsAction="always" />
-    <item
-        android:id="@+id/trigger_debug_log_activity"
-        android:title="Explain"
-        app:showAsAction="always" />
+
     <item
         android:id="@+id/trigger_playlist_generation"
         android:icon="@drawable/ic_refresh_icon"

@@ -34,20 +34,6 @@
         android:ellipsize="marquee"
         />
 
-    <TextView
-        android:id="@+id/ranktext"
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-
-        android:ellipsize="marquee"
-        android:singleLine="true"
-        android:textSize="10sp"
-        android:textColor="#c20632"
-        android:textStyle="bold" />
 
     <ImageButton
         android:id="@+id/getRankInfoButton"
@@ -55,6 +41,8 @@
         android:layout_height="35dp"
         android:layout_alignParentRight="true"
         android:background="@drawable/ic_info2"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:padding="20dp"
+        />
 
 </RelativeLayout>
