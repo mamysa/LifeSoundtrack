@@ -15,6 +15,7 @@ public class MoodActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     setContentView(R.layout.activity_splash);
         Intent intent = getIntent();
         int added = intent.getIntExtra("1", 0);
