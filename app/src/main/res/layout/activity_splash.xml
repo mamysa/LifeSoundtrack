@@ -31,7 +31,7 @@
                 android:layout_width="50dp"
                 android:layout_height="125dp"
                 android:layout_weight="1"
-                android:background="@drawable/ic_smile"
+                android:background="@drawable/ic_happy"
                />
 
             <ImageButton
@@ -39,14 +39,14 @@
                 android:layout_width="50dp"
                 android:layout_height="125dp"
                 android:layout_weight="1"
-                android:background="@drawable/ic_unsure" />
+                android:background="@drawable/ic_neutral" />
 
             <ImageButton
                 android:id="@+id/badMoodButton"
                 android:layout_width="50dp"
                 android:layout_height="125dp"
                 android:layout_weight="1"
-                android:background="@drawable/ic_grumpy" />
+                android:background="@drawable/ic_bad" />
 
         </LinearLayout>
     </LinearLayout>
