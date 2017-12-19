@@ -3,9 +3,12 @@ package ch.usi.inf.gabrialex.datastructures;
 import android.location.Location;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
 /**
@@ -17,6 +20,7 @@ public class RankingReason {
     DateTime startTime;
     DateTime endTime;
     double realPlaytimeRatio;
+    double duration;
     double timeRank;
     Location location;
     double locationRank;
@@ -55,6 +59,11 @@ public class RankingReason {
     public void setTotalRank(double a) {
         this.totalRank = a;
     }
+
+    public void setDuration(double a) {
+        this.duration = a;
+    }
+
     public EnvironmentContext getContext() {
         return context;
     }
@@ -122,17 +131,19 @@ public class RankingReason {
     }
 
     public String getInfo() {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM HH:mm:ss");
+        NumberFormat formatter2 = new DecimalFormat("#0.00");
         String s = "";
-        s += "Start Time:\t" + startTime +"\n";
-        s += "End Time:\t" + endTime +"\n";
-        s += "PlayTime Ratio:\t" + realPlaytimeRatio +"\n";
+        s += "Start Time:\t" + formatter.print(startTime) +"\n";
+        s += "End Time:\t" + formatter.print(endTime) +"\n";
+        s += "Duration:\t" + formatter2.format(this.duration) +" seconds\n";
         s += "Weather:\t" + weather +"\n";
         s += "Mood:\t" + mood +"\n";
 
-        s += "Time Rank:\t" + timeRank +"\n";
-        s += "Location Rank:\t" + locationRank +"\n";
-        s += "Weather Rank:\t" + weatherRank +"\n";
-        s += "Mood Rank:\t" + moodRank;
+        s += "Time Rank:\t" + formatter2.format(timeRank) +"\n";
+        s += "Location Rank:\t" + formatter2.format(locationRank) +"\n";
+        s += "Weather Rank:\t" + formatter2.format(weatherRank) +"\n";
+        s += "Mood Rank:\t" + formatter2.format(moodRank);
 
         return s;
     }

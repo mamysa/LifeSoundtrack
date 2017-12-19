@@ -30,7 +30,7 @@ public class PlaylistRankingTask implements Runnable{
     Context context;
 
     final static public String LOG_FILE_NAME = "rankingDebugLog.txt";
-    private boolean LOG_TO_FILE = true; // FIXME all this file logging stuff must go somewhere else!
+    private boolean LOG_TO_FILE = false; // FIXME all this file logging stuff must go somewhere else!
     private PlaylistUpdateEventListener eventListener;
     FileWriter logFileWriter = null;
 
@@ -124,7 +124,7 @@ public class PlaylistRankingTask implements Runnable{
             this.appendToDebugLogFile(debugStr);
         }
 
-        double playtimeRatio = this.computePlaytimeRatio(cursor);
+        double playtimeRatio = this.computePlaytimeRatio(cursor, reason);
         double realPlaytimeRatio = this.computeRealPlaytimeRatio(cursor);
         entryRank += realPlaytimeRatio * RankWeightPreferences.IMPORTANCE_TIME * rankTime(cursor, environmentContext, reason);
         entryRank += RankWeightPreferences.IMPORTANCE_LOCATION * rankLocation(cursor, environmentContext, reason);
@@ -354,10 +354,11 @@ public class PlaylistRankingTask implements Runnable{
      * @param cursor
      * @return
      */
-    private double computePlaytimeRatio(Cursor cursor) {
+    private double computePlaytimeRatio(Cursor cursor, RankingReason reason) {
         String durationStr = cursor.getString(cursor.getColumnIndex(DBTableAudio.DURATION));
         double duration = (double)Integer.parseInt(durationStr) / 1000.0d;
         double playtime = cursor.getDouble(cursor.getColumnIndex(dbRankableEntry.LISTENING_DURATION));
+        reason.setDuration(playtime);
 
         double ratio = playtime / duration;
 
