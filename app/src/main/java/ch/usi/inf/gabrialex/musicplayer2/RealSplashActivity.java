@@ -16,7 +16,7 @@ public class RealSplashActivity extends AppCompatActivity implements LibraryUpda
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_real_splash);
+        //setContentView(R.layout.activity_real_splash);
         if (requestUserForPermissions()) {
 
             Intent locationIntent = new Intent(this, LocationService.class);
