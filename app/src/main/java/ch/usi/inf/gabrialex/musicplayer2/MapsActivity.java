@@ -23,6 +23,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import ch.usi.inf.gabrialex.datastructures.MusicContext;
@@ -76,8 +78,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void fillMap(GoogleMap googleMap) {
+
+        NumberFormat formatter = new DecimalFormat("#0.00");
         Audio song = Playlist.getInstance().findTrackById(songId);
-        this.header.setText(song.getTitle() + "\nTotal Rank: " + song.getRank());
+        this.header.setText(song.getTitle() + "\nTotal Rank: " + formatter.format(song.getRank()));
         ArrayList<Marker> markers = new ArrayList<Marker>();
         for (RankingReason reason : song.getRankingReasons()) {
             if (reason.isSuperImportant()){
