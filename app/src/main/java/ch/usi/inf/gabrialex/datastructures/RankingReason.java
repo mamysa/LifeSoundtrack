@@ -30,6 +30,7 @@ public class RankingReason {
     double moodRank;
     double playtimeRatio;
     double totalRank;
+    double freshness;
 
     public void setTimeInfo(DateTime a, DateTime b, double d) {
         this.startTime = a;
@@ -116,6 +117,10 @@ public class RankingReason {
         this.context = a;
     }
 
+    public void setFreshness(double a) {
+        this.freshness = a;
+    }
+
     public boolean isSuperImportant() {
         if((location.getLongitude()==0&&location.getLatitude()==0)|| location== null || Double.isInfinite(location.getLongitude())|| Double.isInfinite(location.getLongitude())){
             return false;
@@ -143,7 +148,8 @@ public class RankingReason {
         s += "Time Rank:\t" + formatter2.format(timeRank) +"\n";
         s += "Location Rank:\t" + formatter2.format(locationRank) +"\n";
         s += "Weather Rank:\t" + formatter2.format(weatherRank) +"\n";
-        s += "Mood Rank:\t" + formatter2.format(moodRank);
+        s += "Mood Rank:\t" + formatter2.format(moodRank) +"\n";
+        s += "Freshness:\t" + formatter2.format(this.freshness);
 
         return s;
     }

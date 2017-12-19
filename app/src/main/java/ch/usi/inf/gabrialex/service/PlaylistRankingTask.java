@@ -126,11 +126,17 @@ public class PlaylistRankingTask implements Runnable{
 
         double playtimeRatio = this.computePlaytimeRatio(cursor, reason);
         double realPlaytimeRatio = this.computeRealPlaytimeRatio(cursor);
+        double freshess = this.computeFreshness(cursor, environmentContext, reason);
+        double bias = getBias(cursor);
+        if (bias != 0.0) {
+            playtimeRatio = 1.0;
+        }
         entryRank += realPlaytimeRatio * RankWeightPreferences.IMPORTANCE_TIME * rankTime(cursor, environmentContext, reason);
         entryRank += RankWeightPreferences.IMPORTANCE_LOCATION * rankLocation(cursor, environmentContext, reason);
         entryRank += RankWeightPreferences.IMPORTANCE_MOOD * rankMood(cursor, environmentContext, reason);
         entryRank += RankWeightPreferences.IMPORTANCE_WEATHER * rankWeather(cursor, environmentContext, reason);
-        entryRank = playtimeRatio * entryRank + getBias(cursor);
+
+        entryRank = (playtimeRatio*freshess) * (entryRank + getBias(cursor));
 
         if (LOG_TO_FILE) {
             String debugStr = String.format("Final row rank: %s, w1=%s, w2=%s, w3=%s, w4=%s\n\n", entryRank,
@@ -409,13 +415,16 @@ public class PlaylistRankingTask implements Runnable{
     /**
      * Compute "freshness" of the song. Older entries should contribute less to the rank of the track.
      * This is done by counting days between now and the date the track was played on.
-     * @param start
-     * @param now
      */
-    private double computeFreshness(DateTime start, DateTime now) {
+    private double computeFreshness(Cursor cursor, EnvironmentContext context, RankingReason reason) {
+        String firstResumeStr = cursor.getString(cursor.getColumnIndex(dbRankableEntry.DATE_FIRST_RESUME));
+        DateTime start = DateTime.parse(firstResumeStr);
+        DateTime now = context.getDateTime();
         Period period = new Period(start, now);
         int days = period.toStandardDays().getDays();
-        return (days == 0) ? 1.0 : 1.0/(double)days;
+        double freshness = (days == 0) ? 1.0 : 1.0/(double)days;
+        reason.setFreshness(freshness);
+        return freshness;
     }
 
     /**
