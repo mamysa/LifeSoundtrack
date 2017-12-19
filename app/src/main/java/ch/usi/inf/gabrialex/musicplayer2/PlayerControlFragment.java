@@ -122,6 +122,13 @@ public class PlayerControlFragment extends Fragment {
         else play.setBackgroundResource(R.drawable.ic_pause2);
     }
 
+    public void resetToDefaultText() {
+        TextView view = getView().findViewById(R.id.song_title_box);
+        TextView playbackText = getView().findViewById(R.id.song_progress_box);
+        view.setText("No Track Selected");
+        playbackText.setText("00:00 00:00");
+    }
+
     public void updatePlaybackPosition(int position, int duration) {
         TextView playbackText = getView().findViewById(R.id.song_progress_box);
 

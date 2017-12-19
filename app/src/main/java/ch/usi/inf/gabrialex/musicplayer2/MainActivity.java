@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
      * Request song listing.
      */
     public void onRequestPlaylistListing() {
+        this.playerControlFragment.resetToDefaultText();
         Intent intent = new Intent();
         intent.setAction(Protocol.REQUEST_SONG_LISTING);
         broadcastManager.sendBroadcast(intent);

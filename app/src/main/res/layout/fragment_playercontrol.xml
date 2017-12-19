@@ -18,7 +18,7 @@
             android:id="@+id/song_title_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="title placceholder"
+            android:text="No Track Selected"
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -28,7 +28,7 @@
             android:id="@+id/song_progress_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="progress placeholder"
+            android:text="00:00 00:00"
             android:textAlignment="center" />
 
         <SeekBar
