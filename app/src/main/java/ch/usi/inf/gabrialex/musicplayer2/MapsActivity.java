@@ -112,7 +112,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mood == null){
             return BitmapDescriptorFactory.HUE_RED;
         }
-        if (mood.equals("happy")){
+        if (mood.equals("good")){
             return BitmapDescriptorFactory.HUE_GREEN;
         }
         else if (mood.equals("neutral")) {
