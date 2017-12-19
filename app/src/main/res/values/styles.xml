@@ -6,6 +6,14 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:actionButtonStyle">@style/myActionButtonStyle</item>
+        <item name="actionButtonStyle">@style/myActionButtonStyle</item>
+    </style>
+    <style name="myActionButtonStyle" parent="Widget.AppCompat.ActionButton">
+        <item name="android:minWidth">24dp</item>
+        <item name="android:maxWidth">58dp</item>
+
+        <item name="android:width">48dp</item>
     </style>
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->

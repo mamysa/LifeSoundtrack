@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements PlayerControlEven
                 transaction.add(R.id.controll, this.playerControlFragment);
                 transaction.commitNow();
             }
+
         }
 
 
