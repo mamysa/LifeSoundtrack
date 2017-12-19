@@ -4,21 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ch.usi.inf.gabrialex.musicplayer2.RealSplashActivity">
+    tools:context="ch.usi.inf.gabrialex.musicplayer2.RealSplashActivity"
+   >
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFFFFF"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="@android:dimen/thumbnail_width"
-            android:layout_height="@android:dimen/thumbnail_height"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/background_splash" />
-    </LinearLayout>
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            app:srcCompat="@drawable/logo11" />
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>
+
+
